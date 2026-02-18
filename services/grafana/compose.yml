@@ -1,0 +1,26 @@
+services:
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    restart: unless-stopped
+    hostname: grafana
+    networks:
+      - caddy-private
+    user: 1000:1000
+    volumes:
+      - ./grafana:/var/lib/grafana
+  tailscale:
+    image: tailscale/tailscale:latest
+    pull_policy: always
+    container_name: grafana-ts
+    restart: always
+    environment:
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_EXTRA_ARGS: --advertise-tags=tag:container
+      TS_AUTHKEY: ${TS_AUTHKEY}
+    volumes:
+      - ./tailscale:/var/lib/tailscale
+    network_mode: service:grafana
+networks:
+  caddy-private:
+    external: true

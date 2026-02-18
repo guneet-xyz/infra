@@ -1,0 +1,21 @@
+services:
+  caddy:
+    build:
+      context: .
+    container_name: caddy-public
+    restart: unless-stopped
+    ports:
+      - 172.16.0.4:80:80 # public
+      - 172.16.0.4:443:443 # public
+      - 172.16.0.4:443:443/udp # public
+    networks:
+      - caddy-public
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data:/data
+      - ./config:/config
+    environment:
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN}
+networks:
+  caddy-public:
+    external: true

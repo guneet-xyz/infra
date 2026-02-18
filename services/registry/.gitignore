@@ -1,0 +1,5 @@
+.env
+_credentials.txt
+htpasswd
+registry
+registry-frontend

@@ -1,0 +1,12 @@
+{
+	email guneetaggarwal@gmail.com
+	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+}
+
+easyshell.sh {
+	reverse_proxy easyshell-prod-website:3000
+}
+
+status.guneet.dev {
+	reverse_proxy kuma:3001
+}

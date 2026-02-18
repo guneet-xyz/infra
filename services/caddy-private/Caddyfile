@@ -1,0 +1,40 @@
+{
+	email guneetaggarwal@gmail.com
+	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+}
+
+loki.guneet.xyz {
+	reverse_proxy loki:3100
+}
+
+portainer.guneet.xyz {
+	reverse_proxy portainer:9000
+}
+
+grafana.guneet.xyz {
+	reverse_proxy grafana:3000
+}
+
+prometheus.guneet.xyz {
+	reverse_proxy prometheus:9090
+}
+
+chat.guneet.xyz {
+	reverse_proxy open-webui:8080
+}
+
+registry.guneet.xyz {
+	reverse_proxy registry:5000
+}
+
+cr.guneet.xyz {
+	reverse_proxy registry:5000
+}
+
+crui.guneet.xyz {
+	reverse_proxy registry-frontend:8080
+}
+
+synthing.guneet.xyz {
+	reverse_proxy obsidian-ts:8384
+}
