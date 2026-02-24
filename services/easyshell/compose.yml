@@ -11,12 +11,14 @@ services:
     volumes:
       - /tmp/easyshell:/tmp/easyshell
       - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/root/.docker/config.json:ro
     networks:
       - easyshell
     environment:
       APP: submission-manager
       DRIZZLE_PROXY_URL: http://db-proxy:8008
       DRIZZLE_PROXY_TOKEN: token
+      DOCKER_REGISTRY: cr.guneet.xyz
     depends_on:
       db-proxy:
         condition: service_healthy
@@ -26,11 +28,13 @@ services:
     container_name: easyshell-prod-session-manager
     environment:
       TOKEN: token
+      DOCKER_REGISTRY: cr.guneet.xyz
     networks:
       - easyshell
     volumes:
       - /tmp/easyshell:/tmp/easyshell
       - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/root/.docker/config.json:ro
   db:
     container_name: easyshell-prod-db
     image: postgres:17
