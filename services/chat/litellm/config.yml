@@ -1,34 +1,16 @@
 model_list:
-  # - model_name: Grok 4 Fast (Non-Reasoning)
-  #   litellm_params:
-  #     model: azure/grok-4-fast-non-reasoning
-  #     api_base: https://guneet-aifoundry-prod.openai.azure.com/
-  #     api_key: os.environ/AZURE_API_KEY
-  #     api_version: 2024-05-01-preview
-  - model_name: GPT-5
+  - model_name: claude-opus-4.6
     litellm_params:
-      model: github/gpt-5
-      api_key: os.environ/GITHUB_API_KEY
-  - model_name: GPT-5 Mini
+      model: github_copilot/claude-opus-4.6
+  - model_name: claude-opus-4.6-fast
     litellm_params:
-      model: github/gpt-5-mini
-      api_key: os.environ/GITHUB_API_KEY
-  - model_name: GPT-5 Mini
+      model: github_copilot/claude-opus-4.6-fast
+  - model_name: claude-sonnet-4.6
     litellm_params:
-      model: github/gpt-5-mini
-      api_key: os.environ/GITHUB_API_KEY
-  - model_name: GPT-4o Mini
+      model: github_copilot/claude-sonnet-4.6
+  - model_name: gpt-5.2
     litellm_params:
-      model: github/gpt-4o-mini
-      api_key: os.environ/GITHUB_API_KEY
-  - model_name: GPT-4.1
-    litellm_params:
-      model: github/gpt-4.1
-      api_key: os.environ/GITHUB_API_KEY
-  - model_name: Codestral
-    litellm_params:
-      model: github/codestral-2501
-      api_key: os.environ/GITHUB_API_KEY
+      model: github_copilot/gpt-5.2
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY

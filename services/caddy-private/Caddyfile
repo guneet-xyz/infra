@@ -23,6 +23,10 @@ chat.guneet.xyz {
 	reverse_proxy open-webui:8080
 }
 
+llm.guneet.xyz {
+	reverse_proxy lite-llm:4000
+}
+
 registry.guneet.xyz {
 	reverse_proxy registry:5000
 }
