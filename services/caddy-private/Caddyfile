@@ -42,3 +42,7 @@ crui.guneet.xyz {
 synthing.guneet.xyz {
 	reverse_proxy obsidian-ts:8384
 }
+
+db.guneet.xyz {
+	reverse_proxy dev-db-ui:3000
+}
