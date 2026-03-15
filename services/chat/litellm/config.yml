@@ -11,6 +11,15 @@ model_list:
   - model_name: gpt-5.2
     litellm_params:
       model: github_copilot/gpt-5.2
+  - model_name: gpt-5.3-codex
+    litellm_params:
+      model: github_copilot/gpt-5.3-codex
+  - model_name: gpt-5.4
+    litellm_params:
+      model: github_copilot/gpt-5.4
+  - model_name: gpt-5.3-codex
+    litellm_params:
+      model: github_copilot/gpt-5.3-codex
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
