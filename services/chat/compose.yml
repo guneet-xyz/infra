@@ -10,7 +10,6 @@ services:
       - ./data:/app/backend/data
   lite-llm:
     image: ghcr.io/berriai/litellm:main-latest
-    pull_policy: always
     container_name: lite-llm
     restart: always
     volumes:
@@ -21,8 +20,13 @@ services:
       GITHUB_API_KEY: ${GITHUB_API_KEY}
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
       DATABASE_URL: postgresql://postgres:password@lite-llm-db:5432/litellm
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_SENDER_ADDRESS: ${SMTP_SENDER_ADDRESS}
     networks:
       - caddy-private
+      - caddy-public
     depends_on:
       lite-llm-db:
         condition: service_started
@@ -39,4 +43,6 @@ services:
       - ./litellm-db:/var/lib/postgresql/data
 networks:
   caddy-private:
+    external: true
+  caddy-public:
     external: true

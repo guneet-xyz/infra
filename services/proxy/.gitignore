@@ -1,0 +1,4 @@
+.env
+ssh_host_keys
+ssh_config
+tailscale

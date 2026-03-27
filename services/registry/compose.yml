@@ -19,14 +19,19 @@ services:
       REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers: '[Authorization,Accept,Cache-Control]'
       REGISTRY_HTTP_HEADERS_Access-Control-Expose-Headers: '[Docker-Content-Digest]'
       REGISTRY_STORAGE_DELETE_ENABLED: 'true'
-  frontend:
+  ui:
     container_name: registry-frontend
-    image: quiq/registry-ui
-    volumes:
-      - ./registry-frontend/config.yml:/opt/config.yml:ro
+    image: kvqn/crui:latest
+    pull_policy: always
     restart: always
     networks:
       - caddy-private
+    environment:
+      REGISTRY_URL: http://registry:5000
+      REGISTRY_USERNAME: ${REGISTRY_USERNAME}
+      REGISTRY_PASSWORD: ${REGISTRY_PASSWORD}
+      DISPLAY_REGISTRY_URL: cr.guneet.xyz
+      SESSION_SECRET: ${SESSION_SECRET}
 networks:
   caddy-private:
     external: true

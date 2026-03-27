@@ -2,21 +2,18 @@ model_list:
   - model_name: claude-opus-4.6
     litellm_params:
       model: github_copilot/claude-opus-4.6
+    model_info:
+      supports_vision: True
+      base_model: claude-opus-4-6
   - model_name: claude-opus-4.6-1m
     litellm_params:
       model: github_copilot/claude-opus-4.6-1m
-  - model_name: claude-sonnet-4.6
-    litellm_params:
-      model: github_copilot/claude-sonnet-4.6
-  - model_name: gpt-5.2
-    litellm_params:
-      model: github_copilot/gpt-5.2
-  - model_name: gpt-5.3-codex
-    litellm_params:
-      model: github_copilot/gpt-5.3-codex
-  - model_name: gpt-5.4
-    litellm_params:
-      model: github_copilot/gpt-5.4
+    model_info:
+      supports_vision: True
+      base_model: claude-opus-4-6
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
+
+litellm_settings:
+    callbacks: ["smtp_email"]

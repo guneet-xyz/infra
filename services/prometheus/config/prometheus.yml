@@ -24,3 +24,9 @@ scrape_configs:
   - targets:
     - thinkcentre:9100
     - gilgamesh:9100
+- job_name: caddy
+  static_configs:
+  - targets:
+    - private.caddy.guneet.xyz
+    - public.caddy.guneet.xyz
+    - self.caddy.guneet.xyz

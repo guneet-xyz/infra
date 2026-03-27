@@ -8,6 +8,7 @@ services:
       - 100.100.2.1:80:80 # int
       - 100.100.2.1:443:443 # int
       - 100.100.2.1:443:443/udp # int
+      - 100.100.2.1:2019:2019
     networks:
       - caddy-private
     volumes:

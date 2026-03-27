@@ -5,8 +5,8 @@ services:
     hostname: prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-    restart: unless-stopped
-    user: 1000:1000
+    restart: always
+    user: 0:0
     volumes:
       - ./config:/etc/prometheus
       - ./data:/prometheus

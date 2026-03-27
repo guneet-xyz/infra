@@ -1,18 +1,17 @@
 services:
-  grafana:
-    image: grafana/grafana-enterprise
-    container_name: grafana
-    restart: always
-    hostname: grafana
-    networks:
-      - caddy-private
+  ssh:
+    build: .
+    container_name: proxy
     volumes:
-      - ./grafana:/var/lib/grafana
-    user: 0:0
+      - ./ssh_host_keys:/etc/ssh/keys
+      - ./ssh_config:/root/.ssh:ro
+    restart: always
+    network_mode: service:tailscale
   tailscale:
     image: tailscale/tailscale:latest
     pull_policy: always
-    container_name: grafana-ts
+    hostname: proxy
+    container_name: proxy-ts
     restart: always
     environment:
       TS_STATE_DIR: /var/lib/tailscale
@@ -20,7 +19,8 @@ services:
       TS_AUTHKEY: ${TS_AUTHKEY}
     volumes:
       - ./tailscale:/var/lib/tailscale
-    network_mode: service:grafana
+    networks:
+      - caddy-public
 networks:
-  caddy-private:
+  caddy-public:
     external: true
