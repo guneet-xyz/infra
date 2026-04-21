@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.litellm.appName }}
+  namespace: {{ .Values.apps.litellm.namespace }}
+  labels:
+    app: {{ .Values.apps.litellm.appName }}
+spec:
+  replicas: {{ .Values.apps.litellm.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.litellm.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.litellm.appName }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: litellm
+          image: {{ .Values.apps.litellm.images.litellm.image }}:{{ .Values.apps.litellm.images.litellm.imageTag }}
+          args:
+            - --config
+            - /config/config.yml
+          ports:
+            - containerPort: {{ .Values.apps.litellm.port }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: app-secret
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: {{ .Values.apps.litellm.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /health/readiness
+              port: {{ .Values.apps.litellm.port }}
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /config/config.yml
+              name: config
+              subPath: config.yml
+            - mountPath: /root/.config/litellm
+              name: {{ .Values.apps.litellm.claims.data }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Values.apps.litellm.configMaps.config }}
+            items:
+              - key: config.yml
+                path: config.yml
+        - name: {{ .Values.apps.litellm.claims.data }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.litellm.claims.data }}

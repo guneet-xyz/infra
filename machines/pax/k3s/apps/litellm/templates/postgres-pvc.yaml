@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.apps.litellm.claims.postgresData }}
+  namespace: {{ .Values.apps.litellm.namespace }}
+  labels:
+    app: {{ .Values.apps.litellm.postgres.serviceName }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.apps.litellm.postgresStorage }}

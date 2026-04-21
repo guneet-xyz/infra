@@ -267,10 +267,12 @@ Helm values.
 
 | Key | Used by |
 |---|---|
-| `CLOUDFLARE_API_TOKEN` | caddy-public |
+| `CLOUDFLARE_API_TOKEN` | caddy |
 | `WALLS_AUTH_SECRET` | walls |
 | `SMTP_USERNAME` | shared (all apps needing email) |
 | `SMTP_PASSWORD` | shared (all apps needing email) |
+| `GITHUB_API_KEY` | litellm |
+| `LITELLM_MASTER_KEY` | litellm |
 
 ## Shared Config
 

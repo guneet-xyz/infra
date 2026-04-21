@@ -19,3 +19,7 @@ data:
     headlamp.guneet.xyz {
     	reverse_proxy {{ .Values.apps.headlamp.serviceName }}:{{ .Values.apps.headlamp.port }}
     }
+    
+    llm.guneet.xyz {
+    	reverse_proxy {{ .Values.apps.litellm.serviceName }}:{{ .Values.apps.litellm.port }}
+    }

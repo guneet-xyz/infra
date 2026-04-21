@@ -1,0 +1,32 @@
+apps:
+  litellm:
+    appName: litellm
+    namespace: litellm
+
+    images:
+      litellm:
+        image: ghcr.io/berriai/litellm
+        imageTag: main-latest
+      postgres:
+        image: postgres
+        imageTag: "17"
+
+    replicas: 1
+    port: 4000
+
+    configMaps:
+      config: litellm-config
+
+    claims:
+      data: litellm-data
+      postgresData: litellm-postgres-data
+
+    dataStorage: 1Gi
+    postgresStorage: 5Gi
+
+    postgres:
+      serviceName: litellm-postgres
+      port: 5432
+      dbName: litellm
+      dbUser: postgres
+      dbPassword: password

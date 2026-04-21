@@ -19,3 +19,7 @@ data:
     walls.guneet.dev {
     	reverse_proxy {{ .Values.apps.walls.serviceName }}:{{ .Values.apps.walls.port }}
     }
+    
+    llm.guneet.dev {
+    	reverse_proxy {{ .Values.apps.litellm.serviceName }}:{{ .Values.apps.litellm.port }}
+    }

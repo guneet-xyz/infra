@@ -9,6 +9,9 @@ apps:
   headlamp:
     serviceName: headlamp.headlamp.svc.cluster.local
     port: 80
+  litellm:
+    serviceName: litellm.litellm.svc.cluster.local
+    port: 4000
 
 smtp:
   host: smtp.azurecomm.net

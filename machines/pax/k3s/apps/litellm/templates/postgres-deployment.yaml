@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.litellm.postgres.serviceName }}
+  namespace: {{ .Values.apps.litellm.namespace }}
+  labels:
+    app: {{ .Values.apps.litellm.postgres.serviceName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.litellm.postgres.serviceName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.litellm.postgres.serviceName }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: postgres
+          image: {{ .Values.apps.litellm.images.postgres.image }}:{{ .Values.apps.litellm.images.postgres.imageTag }}
+          ports:
+            - containerPort: {{ .Values.apps.litellm.postgres.port }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.apps.litellm.postgres.dbUser }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.apps.litellm.postgres.dbUser }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: {{ .Values.apps.litellm.claims.postgresData }}
+      volumes:
+        - name: {{ .Values.apps.litellm.claims.postgresData }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.litellm.claims.postgresData }}
