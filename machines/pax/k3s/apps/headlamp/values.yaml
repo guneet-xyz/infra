@@ -1,0 +1,9 @@
+apps:
+  headlamp:
+    appName: headlamp
+    namespace: headlamp
+
+headlamp:
+  clusterRoleBinding:
+    create: true
+    clusterRoleName: cluster-admin

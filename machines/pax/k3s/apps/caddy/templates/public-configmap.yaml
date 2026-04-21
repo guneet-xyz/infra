@@ -1,4 +1,10 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.apps.caddy.public.configMaps.caddyfile }}
+  namespace: {{ .Values.apps.caddy.namespace }}
+  labels:
+    app: {{ .Values.apps.caddy.appName }}
 data:
   Caddyfile: |
     {
@@ -9,10 +15,3 @@ data:
     walls.guneet.dev {
     	reverse_proxy {{ .Values.apps.walls.serviceName }}:{{ .Values.apps.walls.port }}
     }
-
-kind: ConfigMap
-metadata:
-  labels:
-    app: {{ .Values.apps.caddyPublic.appName }}
-  name: {{ .Values.apps.caddyPublic.configMaps.caddyfile }}
-  namespace: {{ .Values.apps.caddyPublic.namespace }}

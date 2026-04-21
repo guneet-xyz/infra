@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.apps.caddyPublic.appName }}
-  namespace: {{ .Values.apps.caddyPublic.namespace }}
+  name: {{ .Values.apps.caddy.appName }}-private
+  namespace: {{ .Values.apps.caddy.namespace }}
   labels:
-    app: {{ .Values.apps.caddyPublic.appName }}
+    app: {{ .Values.apps.caddy.appName }}-private
 spec:
-  replicas: {{ .Values.apps.caddyPublic.replicas }}
+  replicas: {{ .Values.apps.caddy.private.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.apps.caddyPublic.appName }}
+      app: {{ .Values.apps.caddy.appName }}-private
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: {{ .Values.apps.caddyPublic.appName }}
+        app: {{ .Values.apps.caddy.appName }}-private
     spec:
       containers:
         - name: caddy
+          image: {{ .Values.apps.caddy.images.caddy.image }}:{{ .Values.apps.caddy.images.caddy.imageTag }}
           env:
             - name: CLOUDFLARE_API_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: cloudflare-secret
                   key: CLOUDFLARE_API_TOKEN
-          image: {{ .Values.apps.caddyPublic.images.caddy.image }}:{{ .Values.apps.caddyPublic.images.caddy.imageTag }}
           ports:
             - containerPort: 80
               protocol: TCP
@@ -35,17 +35,17 @@ spec:
               protocol: UDP
           volumeMounts:
             - mountPath: /etc/caddy/Caddyfile
-              name: {{ .Values.apps.caddyPublic.configMaps.caddyfile }}
+              name: caddyfile
               subPath: Caddyfile
             - mountPath: /data
-              name: {{ .Values.apps.caddyPublic.claims.caddy }}
+              name: {{ .Values.apps.caddy.claims.data }}
       volumes:
-        - configMap:
+        - name: caddyfile
+          configMap:
+            name: {{ .Values.apps.caddy.private.configMaps.caddyfile }}
             items:
               - key: Caddyfile
                 path: Caddyfile
-            name: {{ .Values.apps.caddyPublic.configMaps.caddyfile }}
-          name: {{ .Values.apps.caddyPublic.configMaps.caddyfile }}
-        - name: {{ .Values.apps.caddyPublic.claims.caddy }}
+        - name: {{ .Values.apps.caddy.claims.data }}
           persistentVolumeClaim:
-            claimName: {{ .Values.apps.caddyPublic.claims.caddy }}
+            claimName: {{ .Values.apps.caddy.claims.data }}

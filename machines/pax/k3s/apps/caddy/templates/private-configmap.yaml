@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.apps.caddy.private.configMaps.caddyfile }}
+  namespace: {{ .Values.apps.caddy.namespace }}
+  labels:
+    app: {{ .Values.apps.caddy.appName }}
+data:
+  Caddyfile: |
+    {
+    	email guneetaggarwal@gmail.com
+    	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    }
+    
+    headlamp.guneet.xyz {
+    	reverse_proxy {{ .Values.apps.headlamp.serviceName }}:{{ .Values.apps.headlamp.port }}
+    }

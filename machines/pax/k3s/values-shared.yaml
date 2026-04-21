@@ -6,6 +6,9 @@ apps:
   walls:
     serviceName: walls.walls.svc.cluster.local
     port: 3000
+  headlamp:
+    serviceName: headlamp.headlamp.svc.cluster.local
+    port: 80
 
 smtp:
   host: smtp.azurecomm.net

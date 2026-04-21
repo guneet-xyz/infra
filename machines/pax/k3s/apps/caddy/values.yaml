@@ -1,0 +1,26 @@
+apps:
+  caddy:
+    appName: caddy
+    namespace: caddy
+
+    images:
+      caddy:
+        image: caddybuilds/caddy-cloudflare
+        imageTag: latest
+
+    claims:
+      data: caddy-data
+
+    storage: 200Mi
+
+    public:
+      replicas: 1
+      externalIP: "172.16.0.5"
+      configMaps:
+        caddyfile: caddy-public-caddyfile
+
+    private:
+      replicas: 1
+      externalIP: "100.72.80.23"
+      configMaps:
+        caddyfile: caddy-private-caddyfile

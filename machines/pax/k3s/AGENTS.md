@@ -31,10 +31,19 @@ Each subdirectory under `apps/` is a Helm chart.
 
 Services must be installed in this order due to dependencies:
 
-1. **caddy-public** — routes public traffic, no app dependencies
+1. **caddy** — routes public and private traffic, no app dependencies
 2. **registry** — hosts container images for custom apps
-3. **apps** (walls, etc.) — depend on registry for images and caddy
-   for routing
+3. **apps** (walls, headlamp, etc.) — depend on registry for images and
+   caddy for routing
+
+## Domain Convention
+
+- `*.guneet.dev` — public services, routed through caddy-public
+  (eth0 / `172.16.0.5`)
+- `*.guneet.xyz` — private services, routed through caddy-private
+  (tailscale0 / `100.72.80.23`)
+
+This is a best-effort convention, not a strict rule.
 
 ## Validation
 
