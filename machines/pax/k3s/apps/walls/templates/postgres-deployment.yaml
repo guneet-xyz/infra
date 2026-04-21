@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.walls.postgres.serviceName }}
+  namespace: {{ .Values.apps.walls.namespace }}
+  labels:
+    app: {{ .Values.apps.walls.postgres.serviceName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.walls.postgres.serviceName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.walls.postgres.serviceName }}
+    spec:
+      containers:
+        - name: postgres
+          image: {{ .Values.apps.walls.images.postgres.image }}:{{ .Values.apps.walls.images.postgres.imageTag }}
+          ports:
+            - containerPort: {{ .Values.apps.walls.postgres.port }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.apps.walls.postgres.dbUser }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.apps.walls.postgres.dbUser }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: {{ .Values.apps.walls.claims.postgresData }}
+      volumes:
+        - name: {{ .Values.apps.walls.claims.postgresData }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.walls.claims.postgresData }}

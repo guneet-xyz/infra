@@ -1,0 +1,13 @@
+# Shared values for cross-app references and common config.
+#
+# Usage: helm install -f values-shared.yaml -f apps/<chart>/values.yaml ...
+
+apps:
+  walls:
+    serviceName: walls.walls.svc.cluster.local
+    port: 3000
+
+smtp:
+  host: smtp.azurecomm.net
+  port: "587"
+  mailFrom: noreply@guneet.xyz

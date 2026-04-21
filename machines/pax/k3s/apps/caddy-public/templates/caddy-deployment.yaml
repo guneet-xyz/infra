@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.caddyPublic.appName }}
+  namespace: {{ .Values.apps.caddyPublic.namespace }}
+  labels:
+    app: {{ .Values.apps.caddyPublic.appName }}
+spec:
+  replicas: {{ .Values.apps.caddyPublic.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.caddyPublic.appName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.caddyPublic.appName }}
+    spec:
+      containers:
+        - name: caddy
+          env:
+            - name: CLOUDFLARE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare-secret
+                  key: CLOUDFLARE_API_TOKEN
+          image: {{ .Values.apps.caddyPublic.images.caddy.image }}:{{ .Values.apps.caddyPublic.images.caddy.imageTag }}
+          ports:
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 443
+              protocol: TCP
+            - containerPort: 443
+              protocol: UDP
+          volumeMounts:
+            - mountPath: /etc/caddy/Caddyfile
+              name: {{ .Values.apps.caddyPublic.configMaps.caddyfile }}
+              subPath: Caddyfile
+            - mountPath: /data
+              name: {{ .Values.apps.caddyPublic.claims.caddy }}
+      volumes:
+        - configMap:
+            items:
+              - key: Caddyfile
+                path: Caddyfile
+            name: {{ .Values.apps.caddyPublic.configMaps.caddyfile }}
+          name: {{ .Values.apps.caddyPublic.configMaps.caddyfile }}
+        - name: {{ .Values.apps.caddyPublic.claims.caddy }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.caddyPublic.claims.caddy }}

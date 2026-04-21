@@ -1,0 +1,33 @@
+apps:
+  walls:
+    appName: walls
+    namespace: walls
+
+    images:
+      walls:
+        image: kvqn/walls
+        imageTag: latest
+      migrate:
+        image: kvqn/walls-migrate
+        imageTag: latest
+      postgres:
+        image: postgres
+        imageTag: "17-alpine"
+
+    replicas: 1
+    port: 3000
+
+    postgres:
+      serviceName: walls-postgres
+      port: 5432
+      dbName: walls
+      dbUser: walls
+      dbPassword: walls
+
+    claims:
+      postgresData: walls-postgres-data
+
+    storage: 5Gi
+
+smtp:
+  mailFrom: noreply@guneet.dev

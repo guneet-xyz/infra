@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.walls.appName }}
+  namespace: {{ .Values.apps.walls.namespace }}
+  labels:
+    app: {{ .Values.apps.walls.appName }}
+spec:
+  replicas: {{ .Values.apps.walls.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.walls.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.walls.appName }}
+    spec:
+      initContainers:
+        - name: db-migrate
+          image: {{ .Values.apps.walls.images.migrate.image }}:{{ .Values.apps.walls.images.migrate.imageTag }}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DATABASE_URL
+      containers:
+        - name: walls
+          image: {{ .Values.apps.walls.images.walls.image }}:{{ .Values.apps.walls.images.walls.imageTag }}
+          ports:
+            - containerPort: {{ .Values.apps.walls.port }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: app-secret

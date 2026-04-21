@@ -1,0 +1,23 @@
+apps:
+  caddyPublic:
+    appName: caddy-public
+    namespace: caddy-public
+
+    images:
+      caddy:
+        image: caddybuilds/caddy-cloudflare
+        imageTag: latest
+
+    replicas: 1
+    port:
+      http: 80
+      https: 443
+
+    claims:
+      caddy: pvc
+
+    mounts:
+      caddy: mount
+
+    configMaps:
+      caddyfile: caddyfile
