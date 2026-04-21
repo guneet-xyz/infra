@@ -10,11 +10,18 @@ spec:
   selector:
     matchLabels:
       app: {{ .Values.apps.walls.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   template:
     metadata:
       labels:
         app: {{ .Values.apps.walls.appName }}
     spec:
+      nodeSelector:
+        role: primary
       initContainers:
         - name: db-migrate
           image: {{ .Values.apps.walls.images.migrate.image }}:{{ .Values.apps.walls.images.migrate.imageTag }}
@@ -33,3 +40,15 @@ spec:
           envFrom:
             - secretRef:
                 name: app-secret
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apps.walls.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apps.walls.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10

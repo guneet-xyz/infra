@@ -11,12 +11,17 @@ spec:
     matchLabels:
       app: {{ .Values.apps.caddy.appName }}-private
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   template:
     metadata:
       labels:
         app: {{ .Values.apps.caddy.appName }}-private
     spec:
+      nodeSelector:
+        role: primary
       containers:
         - name: caddy
           image: {{ .Values.apps.caddy.images.caddy.image }}:{{ .Values.apps.caddy.images.caddy.imageTag }}
@@ -33,6 +38,18 @@ spec:
               protocol: TCP
             - containerPort: 443
               protocol: UDP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
           volumeMounts:
             - mountPath: /etc/caddy/Caddyfile
               name: caddyfile

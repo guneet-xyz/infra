@@ -26,6 +26,7 @@ Each subdirectory under `apps/` is a Helm chart.
 - [`obscuro`](https://github.com/janklabs/obscuro) installed
 - `obscuro init` run in the repo (`.obscuro/` is at the repo root)
 - `obscuro auth store` to save the master password in the OS keychain
+- Node labeled: `kubectl label node pax role=primary`
 
 ## Bootstrap Order
 
@@ -136,6 +137,75 @@ metadata:
 Namespaces are created automatically by `deploy.sh` via Helm's
 `--create-namespace` flag. Do not include a `namespace.yaml` template in
 charts.
+
+### Node Pinning
+
+All pods are pinned to the `primary` node using `nodeSelector`. This
+ensures all workloads run on the same node, which is required for shared
+RWO PVCs and interface-bound services.
+
+For our own templates:
+
+```yaml
+spec:
+  template:
+    spec:
+      nodeSelector:
+        role: primary
+```
+
+For upstream umbrella charts (e.g., headlamp), set `nodeSelector` in
+the chart's values:
+
+```yaml
+headlamp:
+  nodeSelector:
+    role: primary
+```
+
+Prerequisite: `kubectl label node pax role=primary`
+
+### Deployment Strategy
+
+Use `RollingUpdate` by default with zero-downtime settings:
+
+```yaml
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+```
+
+Use `Recreate` only for single-writer databases (e.g., PostgreSQL) where
+two instances must never run simultaneously against the same data
+directory.
+
+### Health Probes
+
+Every container must have readiness and liveness probes. These are
+required for rolling updates to work correctly — Kubernetes needs to know
+when a new pod is ready before killing the old one.
+
+For HTTP services:
+
+```yaml
+readinessProbe:
+  httpGet:
+    path: /
+    port: <port>
+  initialDelaySeconds: 5
+  periodSeconds: 5
+livenessProbe:
+  httpGet:
+    path: /
+    port: <port>
+  initialDelaySeconds: 15
+  periodSeconds: 10
+```
+
+For databases, use command-based probes (e.g., `pg_isready` for
+PostgreSQL).
 
 ## Secrets
 

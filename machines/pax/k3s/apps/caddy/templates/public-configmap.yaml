@@ -12,6 +12,10 @@ data:
     	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
     }
     
+    :80 {
+    	respond /healthz 200
+    }
+    
     walls.guneet.dev {
     	reverse_proxy {{ .Values.apps.walls.serviceName }}:{{ .Values.apps.walls.port }}
     }

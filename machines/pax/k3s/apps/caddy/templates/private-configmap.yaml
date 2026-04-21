@@ -12,6 +12,10 @@ data:
     	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
     }
     
+    :80 {
+    	respond /healthz 200
+    }
+    
     headlamp.guneet.xyz {
     	reverse_proxy {{ .Values.apps.headlamp.serviceName }}:{{ .Values.apps.headlamp.port }}
     }

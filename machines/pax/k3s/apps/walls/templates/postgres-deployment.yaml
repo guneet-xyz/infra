@@ -17,6 +17,8 @@ spec:
       labels:
         app: {{ .Values.apps.walls.postgres.serviceName }}
     spec:
+      nodeSelector:
+        role: primary
       containers:
         - name: postgres
           image: {{ .Values.apps.walls.images.postgres.image }}:{{ .Values.apps.walls.images.postgres.imageTag }}
