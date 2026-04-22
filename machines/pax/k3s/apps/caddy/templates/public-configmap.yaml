@@ -17,9 +17,9 @@ data:
     }
     
     walls.guneet.dev {
-    	reverse_proxy {{ .Values.apps.walls.serviceName }}:{{ .Values.apps.walls.port }}
+    	reverse_proxy {{ .Values.apps.walls.appName }}.{{ .Values.apps.walls.namespace }}.svc.cluster.local:{{ .Values.apps.walls.port }}
     }
     
     llm.guneet.dev {
-    	reverse_proxy {{ .Values.apps.litellm.serviceName }}:{{ .Values.apps.litellm.port }}
+    	reverse_proxy {{ .Values.apps.litellm.appName }}.{{ .Values.apps.litellm.namespace }}.svc.cluster.local:{{ .Values.apps.litellm.port }}
     }

@@ -9,7 +9,7 @@ usage() {
   echo "Usage: $0 <chart> [install|upgrade|uninstall]"
   echo ""
   echo "Examples:"
-  echo "  $0 caddy-public install"
+  echo "  $0 caddy install"
   echo "  $0 walls upgrade"
   echo "  $0 walls uninstall"
   echo ""
@@ -35,13 +35,8 @@ if [[ ! -f "$CHART_DIR/Chart.yaml" ]]; then
   exit 1
 fi
 
-# Extract namespace from values.yaml (always the first 'namespace:' under apps)
-NAMESPACE=$(grep 'namespace:' "$CHART_DIR/values.yaml" | head -1 | awk '{print $2}')
-
-if [[ -z "$NAMESPACE" ]]; then
-  echo "Error: could not determine namespace from $CHART_DIR/values.yaml"
-  exit 1
-fi
+# Namespace matches the chart directory name by convention
+NAMESPACE="$CHART"
 
 case "$ACTION" in
   install)

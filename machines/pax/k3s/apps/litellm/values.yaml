@@ -1,8 +1,5 @@
 apps:
   litellm:
-    appName: litellm
-    namespace: litellm
-
     images:
       litellm:
         image: ghcr.io/berriai/litellm
@@ -12,7 +9,6 @@ apps:
         imageTag: "17"
 
     replicas: 1
-    port: 4000
 
     configMaps:
       config: litellm-config

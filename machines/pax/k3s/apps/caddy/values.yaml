@@ -1,8 +1,5 @@
 apps:
   caddy:
-    appName: caddy
-    namespace: caddy
-
     images:
       caddy:
         image: caddybuilds/caddy-cloudflare

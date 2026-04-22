@@ -64,17 +64,36 @@ All app values are nested under `apps.<camelCaseName>`. The camelCase key
 is the app identifier; the `appName` field inside holds the actual
 Kubernetes resource name (typically kebab-case).
 
-Every chart's `values.yaml` must follow this structure:
+`appName`, `namespace`, and `port` are defined in `values-shared.yaml`
+(the single source of truth for app identity and cross-app references).
+Chart-level `values.yaml` files only contain chart-specific config
+(images, replicas, claims, etc.).
+
+`values-shared.yaml` structure:
 
 ```yaml
 apps:
   <camelCaseName>:
     appName: <kebab-case-name>
     namespace: <namespace>
+    port: <service-port>          # omit if not referenced by other charts
+```
+
+Chart-level `values.yaml` structure:
+
+```yaml
+apps:
+  <camelCaseName>:
     images: ...
     replicas: ...
     claims: ...
 ```
+
+Helm merges both files (`-f values-shared.yaml -f values.yaml`), so
+templates access all fields under `.Values.apps.<camelCaseName>`.
+
+The namespace must match the chart directory name. `deploy.sh` uses the
+chart directory name as the Helm release namespace.
 
 ### Naming
 
@@ -284,32 +303,25 @@ installed with `-f values-shared.yaml` to merge these values.
 #### Cross-App References
 
 When a chart references another app's service (e.g., a reverse proxy
-routing to a backend), define it in `values-shared.yaml`:
-
-```yaml
-apps:
-  <camelCaseName>:
-    serviceName: <dns-name>
-    port: <port>
-```
+routing to a backend), it uses `appName`, `namespace`, and `port` from
+`values-shared.yaml` to derive the full service DNS name in templates.
 
 #### Cross-Namespace Networking
 
-Services in different namespaces must use the full Kubernetes DNS name:
+Services in different namespaces must use the full Kubernetes DNS name,
+derived from shared values:
 
 ```
-<service>.<namespace>.svc.cluster.local
+{{ .Values.apps.<name>.appName }}.{{ .Values.apps.<name>.namespace }}.svc.cluster.local
 ```
 
-For example, caddy-public (in `caddy-public` namespace) reaching walls
-(in `walls` namespace):
+For example, caddy reaching walls:
 
-```yaml
-apps:
-  walls:
-    serviceName: walls.walls.svc.cluster.local
-    port: 3000
 ```
+{{ .Values.apps.walls.appName }}.{{ .Values.apps.walls.namespace }}.svc.cluster.local:{{ .Values.apps.walls.port }}
+```
+
+Never hardcode full service DNS names in values or templates.
 
 #### Shared SMTP Config
 
