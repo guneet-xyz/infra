@@ -19,6 +19,12 @@ for chart_dir in "$APPS_DIR"/*/; do
     continue
   fi
 
+  # Skip library charts — they cannot be rendered standalone
+  if grep -q 'type: library' "$chart_dir/Chart.yaml"; then
+    echo "SKIP: $chart_name — library chart"
+    continue
+  fi
+
   echo "Validating $chart_name..."
 
   # Build helm template args

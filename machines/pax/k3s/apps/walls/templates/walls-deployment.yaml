@@ -34,6 +34,14 @@ spec:
       containers:
         - name: walls
           image: {{ .Values.apps.walls.images.walls.image }}:{{ .Values.apps.walls.images.walls.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
           ports:
             - containerPort: {{ .Values.apps.walls.port }}
               protocol: TCP

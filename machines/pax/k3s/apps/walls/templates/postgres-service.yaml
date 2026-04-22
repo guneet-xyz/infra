@@ -1,14 +1,1 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.apps.walls.postgres.serviceName }}
-  namespace: {{ .Values.apps.walls.namespace }}
-  labels:
-    app: {{ .Values.apps.walls.postgres.serviceName }}
-spec:
-  ports:
-    - name: postgres
-      port: {{ .Values.apps.walls.postgres.port }}
-      targetPort: {{ .Values.apps.walls.postgres.port }}
-  selector:
-    app: {{ .Values.apps.walls.postgres.serviceName }}
+{{ include "postgres.service" (dict "app" .Values.apps.walls) }}

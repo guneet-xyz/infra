@@ -9,6 +9,8 @@ machines/pax/k3s/
 ├── validate.sh            # Validates all chart templates
 ├── .obscuro/              # Encrypted secrets (safe to commit)
 ├── values-shared.yaml     # Cross-app references and shared config
+├── shared/                # Shared Helm library charts
+│   └── postgres/          # PostgreSQL library chart (type: library)
 └── apps/                  # All Helm charts
     └── <chart>/
         ├── Chart.yaml
@@ -17,7 +19,9 @@ machines/pax/k3s/
         └── templates/
 ```
 
-Each subdirectory under `apps/` is a Helm chart.
+Each subdirectory under `apps/` is a Helm chart. Subdirectories under
+`shared/` are library charts that cannot be installed directly — they
+provide reusable named templates that app charts depend on.
 
 ## Prerequisites
 
@@ -352,3 +356,52 @@ The script handles `-n <namespace> --create-namespace`, merging
 `values-shared.yaml`, and the Obscuro post-renderer.
 
 See each chart's `README.md` for additional details.
+
+## Shared Library Charts
+
+Library charts live under `shared/` and provide reusable templates. They
+have `type: library` in their `Chart.yaml` and cannot be installed
+directly.
+
+### Postgres Library (`shared/postgres`)
+
+Provides named templates for a standard PostgreSQL sidecar: deployment,
+service, secret, and PVC. App charts depend on it via:
+
+```yaml
+# Chart.yaml
+dependencies:
+  - name: postgres
+    version: ">=0.1.0"
+    repository: file://../../shared/postgres
+```
+
+After adding the dependency, run `helm dependency update` to pull it in.
+
+Templates are invoked with `include`, passing the app's values:
+
+```yaml
+{{ include "postgres.deployment" (dict "app" .Values.apps.<name>) }}
+```
+
+Available templates: `postgres.deployment`, `postgres.service`,
+`postgres.secret`, `postgres.pvc`.
+
+The calling chart's `values.yaml` must provide these fields under
+`apps.<name>`:
+
+```yaml
+images:
+  postgres:
+    image: postgres
+    imageTag: "17.9"
+postgres:
+  serviceName: <app>-postgres
+  port: 5432
+  dbName: <db>
+  dbUser: <user>
+  dbPassword: <password>   # will be moved to Obscuro
+  storage: 1Gi             # use 1Gi for new charts
+claims:
+  postgresData: <app>-postgres-data
+```

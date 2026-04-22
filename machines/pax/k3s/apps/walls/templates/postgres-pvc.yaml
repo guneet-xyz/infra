@@ -1,13 +1,1 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.apps.walls.claims.postgresData }}
-  namespace: {{ .Values.apps.walls.namespace }}
-  labels:
-    app: {{ .Values.apps.walls.postgres.serviceName }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.apps.walls.storage }}
+{{ include "postgres.pvc" (dict "app" .Values.apps.walls) }}

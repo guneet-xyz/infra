@@ -3,10 +3,10 @@ apps:
     images:
       litellm:
         image: ghcr.io/berriai/litellm
-        imageTag: main-latest
+        imageTag: v1.83.7-stable
       postgres:
         image: postgres
-        imageTag: "17"
+        imageTag: "17.9"
 
     replicas: 1
 
@@ -17,12 +17,13 @@ apps:
       data: litellm-data
       postgresData: litellm-postgres-data
 
-    dataStorage: 1Gi
-    postgresStorage: 5Gi
-
     postgres:
       serviceName: litellm-postgres
       port: 5432
       dbName: litellm
       dbUser: postgres
       dbPassword: password
+      storage: 5Gi
+
+    storage:
+      data: 1Gi

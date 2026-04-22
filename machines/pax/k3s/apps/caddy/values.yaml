@@ -3,7 +3,7 @@ apps:
     images:
       caddy:
         image: caddybuilds/caddy-cloudflare
-        imageTag: latest
+        imageTag: "2.11.2"
 
     claims:
       data: caddy-data

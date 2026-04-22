@@ -25,6 +25,14 @@ spec:
       containers:
         - name: litellm
           image: {{ .Values.apps.litellm.images.litellm.image }}:{{ .Values.apps.litellm.images.litellm.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
           args:
             - --config
             - /config/config.yml
@@ -43,9 +51,9 @@ spec:
             failureThreshold: 30
           livenessProbe:
             httpGet:
-              path: /health/readiness
+              path: /health/liveliness
               port: {{ .Values.apps.litellm.port }}
-            initialDelaySeconds: 20
+            initialDelaySeconds: 60
             periodSeconds: 10
           volumeMounts:
             - mountPath: /config/config.yml

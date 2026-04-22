@@ -1,3 +1,7 @@
+# This PVC is ReadWriteOnce and shared by both caddy-public and caddy-private.
+# This works because all pods are pinned to the same node via nodeSelector.
+# If node pinning is ever removed, this must be changed to ReadWriteMany or
+# split into separate PVCs per variant.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

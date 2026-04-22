@@ -1,6 +1,6 @@
 headlamp:
   clusterRoleBinding:
     create: true
-    clusterRoleName: cluster-admin
+    clusterRoleName: headlamp-readonly
   nodeSelector:
     role: primary

@@ -1,15 +1,18 @@
+{{- range $variant := list "public" "private" }}
+{{- $variantValues := index $.Values.apps.caddy $variant }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.apps.caddy.appName }}-private
-  namespace: {{ .Values.apps.caddy.namespace }}
+  name: {{ $.Values.apps.caddy.appName }}-{{ $variant }}
+  namespace: {{ $.Values.apps.caddy.namespace }}
   labels:
-    app: {{ .Values.apps.caddy.appName }}-private
+    app: {{ $.Values.apps.caddy.appName }}-{{ $variant }}
 spec:
-  replicas: {{ .Values.apps.caddy.private.replicas }}
+  replicas: {{ $variantValues.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.apps.caddy.appName }}-private
+      app: {{ $.Values.apps.caddy.appName }}-{{ $variant }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -18,13 +21,21 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ .Values.apps.caddy.appName }}-private
+        app: {{ $.Values.apps.caddy.appName }}-{{ $variant }}
     spec:
       nodeSelector:
         role: primary
       containers:
         - name: caddy
-          image: {{ .Values.apps.caddy.images.caddy.image }}:{{ .Values.apps.caddy.images.caddy.imageTag }}
+          image: {{ $.Values.apps.caddy.images.caddy.image }}:{{ $.Values.apps.caddy.images.caddy.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
           env:
             - name: CLOUDFLARE_API_TOKEN
               valueFrom:
@@ -55,14 +66,15 @@ spec:
               name: caddyfile
               subPath: Caddyfile
             - mountPath: /data
-              name: {{ .Values.apps.caddy.claims.data }}
+              name: {{ $.Values.apps.caddy.claims.data }}
       volumes:
         - name: caddyfile
           configMap:
-            name: {{ .Values.apps.caddy.private.configMaps.caddyfile }}
+            name: {{ $variantValues.configMaps.caddyfile }}
             items:
               - key: Caddyfile
                 path: Caddyfile
-        - name: {{ .Values.apps.caddy.claims.data }}
+        - name: {{ $.Values.apps.caddy.claims.data }}
           persistentVolumeClaim:
-            claimName: {{ .Values.apps.caddy.claims.data }}
+            claimName: {{ $.Values.apps.caddy.claims.data }}
+{{- end }}

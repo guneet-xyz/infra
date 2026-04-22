@@ -10,4 +10,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.apps.litellm.dataStorage }}
+      storage: {{ .Values.apps.litellm.storage.data }}

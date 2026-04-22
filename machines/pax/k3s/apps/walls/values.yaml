@@ -3,15 +3,17 @@ apps:
     images:
       walls:
         image: kvqn/walls
-        imageTag: latest
+        imageTag: "1.7.0"
       migrate:
         image: kvqn/walls-migrate
-        imageTag: latest
+        imageTag: "1.7.0"
       postgres:
         image: postgres
-        imageTag: "17-alpine"
+        imageTag: "17.9-alpine"
 
     replicas: 1
+
+    domain: walls.guneet.dev
 
     postgres:
       serviceName: walls-postgres
@@ -19,11 +21,10 @@ apps:
       dbName: walls
       dbUser: walls
       dbPassword: walls
+      storage: 5Gi
 
     claims:
       postgresData: walls-postgres-data
-
-    storage: 5Gi
 
 smtp:
   mailFrom: noreply@guneet.dev
