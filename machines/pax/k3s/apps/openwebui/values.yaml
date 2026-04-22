@@ -1,0 +1,14 @@
+apps:
+  openwebui:
+    images:
+      openwebui:
+        image: ghcr.io/open-webui/open-webui
+        imageTag: v0.9.1
+
+    replicas: 1
+
+    claims:
+      data: openwebui-data
+
+    storage:
+      data: 5Gi
