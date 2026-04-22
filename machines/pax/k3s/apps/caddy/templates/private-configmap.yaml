@@ -23,3 +23,7 @@ data:
     llm.guneet.xyz {
     	reverse_proxy {{ .Values.apps.litellm.appName }}.{{ .Values.apps.litellm.namespace }}.svc.cluster.local:{{ .Values.apps.litellm.port }}
     }
+
+    chat.guneet.xyz {
+    	reverse_proxy {{ .Values.apps.openwebui.appName }}.{{ .Values.apps.openwebui.namespace }}.svc.cluster.local:{{ .Values.apps.openwebui.port }}
+    }

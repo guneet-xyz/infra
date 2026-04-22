@@ -18,6 +18,10 @@ apps:
     appName: litellm
     namespace: litellm
     port: 4000
+  openwebui:
+    appName: openwebui
+    namespace: openwebui
+    port: 8080
 
 smtp:
   host: smtp.azurecomm.net
