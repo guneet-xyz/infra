@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.apps.registryUi.appName }}
+  namespace: {{ .Values.apps.registry.namespace }}
+  labels:
+    app: {{ .Values.apps.registryUi.appName }}
+spec:
+  ports:
+    - name: http
+      port: {{ .Values.apps.registryUi.port }}
+      targetPort: {{ .Values.apps.registryUi.port }}
+  selector:
+    app: {{ .Values.apps.registryUi.appName }}

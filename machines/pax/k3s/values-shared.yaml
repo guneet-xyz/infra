@@ -22,6 +22,14 @@ apps:
     appName: openwebui
     namespace: openwebui
     port: 8080
+  registry:
+    appName: registry
+    namespace: registry
+    port: 5000
+  registryUi:
+    appName: registry-ui
+    namespace: registry
+    port: 3000
 
 smtp:
   host: smtp.azurecomm.net

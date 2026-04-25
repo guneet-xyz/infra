@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.registry.appName }}
+  namespace: {{ .Values.apps.registry.namespace }}
+  labels:
+    app: {{ .Values.apps.registry.appName }}
+spec:
+  replicas: {{ .Values.apps.registry.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.registry.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.registry.appName }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: registry
+          image: {{ .Values.apps.registry.images.registry.image }}:{{ .Values.apps.registry.images.registry.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          ports:
+            - containerPort: {{ .Values.apps.registry.port }}
+              protocol: TCP
+          env:
+            - name: OTEL_TRACES_EXPORTER
+              value: none
+            - name: REGISTRY_AUTH
+              value: htpasswd
+            - name: REGISTRY_AUTH_HTPASSWD_REALM
+              value: Registry Realm
+            - name: REGISTRY_AUTH_HTPASSWD_PATH
+              value: /auth/htpasswd
+            - name: REGISTRY_STORAGE_DELETE_ENABLED
+              value: "true"
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.apps.registry.configMaps.registryConfig }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.apps.registry.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.apps.registry.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /var/lib/registry
+              name: {{ .Values.apps.registry.claims.registryData }}
+            - mountPath: /auth
+              name: htpasswd
+              readOnly: true
+      volumes:
+        - name: {{ .Values.apps.registry.claims.registryData }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.registry.claims.registryData }}
+        - name: htpasswd
+          secret:
+            secretName: registry-auth
+            items:
+              - key: htpasswd
+                path: htpasswd

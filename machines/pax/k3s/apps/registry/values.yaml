@@ -1,0 +1,22 @@
+apps:
+  registry:
+    images:
+      registry:
+        image: registry
+        imageTag: "3"
+      ui:
+        image: kvqn/crui
+        imageTag: latest
+
+    replicas: 1
+
+    domain: cr.guneet.xyz
+    displayRegistryUrl: cr.guneet.xyz
+
+    storage: 10Gi
+
+    claims:
+      registryData: registry-data
+
+    configMaps:
+      registryConfig: registry-config

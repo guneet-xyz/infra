@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.registryUi.appName }}
+  namespace: {{ .Values.apps.registry.namespace }}
+  labels:
+    app: {{ .Values.apps.registryUi.appName }}
+spec:
+  replicas: {{ .Values.apps.registry.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.registryUi.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.registryUi.appName }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: crui
+          image: {{ .Values.apps.registry.images.ui.image }}:{{ .Values.apps.registry.images.ui.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+          ports:
+            - containerPort: {{ .Values.apps.registryUi.port }}
+              protocol: TCP
+          env:
+            - name: REGISTRY_URL
+              value: http://{{ .Values.apps.registry.appName }}:{{ .Values.apps.registry.port }}
+            - name: DISPLAY_REGISTRY_URL
+              value: {{ .Values.apps.registry.displayRegistryUrl }}
+          envFrom:
+            - secretRef:
+                name: ui-secret
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apps.registryUi.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apps.registryUi.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10

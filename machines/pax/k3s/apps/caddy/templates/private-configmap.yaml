@@ -27,3 +27,8 @@ data:
     chat.guneet.xyz {
     	reverse_proxy {{ .Values.apps.openwebui.appName }}.{{ .Values.apps.openwebui.namespace }}.svc.cluster.local:{{ .Values.apps.openwebui.port }}
     }
+
+    cr.guneet.xyz {
+    	reverse_proxy /v2/* {{ .Values.apps.registry.appName }}.{{ .Values.apps.registry.namespace }}.svc.cluster.local:{{ .Values.apps.registry.port }}
+    	reverse_proxy {{ .Values.apps.registryUi.appName }}.{{ .Values.apps.registryUi.namespace }}.svc.cluster.local:{{ .Values.apps.registryUi.port }}
+    }
