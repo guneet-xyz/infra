@@ -22,6 +22,10 @@ apps:
     appName: openwebui
     namespace: openwebui
     port: 8080
+  infisical:
+    appName: infisical
+    namespace: infisical
+    port: 8080
   registry:
     appName: registry
     namespace: registry

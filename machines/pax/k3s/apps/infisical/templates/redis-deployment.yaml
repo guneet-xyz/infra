@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.infisical.redis.serviceName }}
+  namespace: {{ .Values.apps.infisical.namespace }}
+  labels:
+    app: {{ .Values.apps.infisical.redis.serviceName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.infisical.redis.serviceName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.infisical.redis.serviceName }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: redis
+          image: {{ .Values.apps.infisical.images.redis.image }}:{{ .Values.apps.infisical.images.redis.imageTag }}
+          ports:
+            - containerPort: {{ .Values.apps.infisical.redis.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+      volumes:
+        - name: redis-data
+          emptyDir: {}

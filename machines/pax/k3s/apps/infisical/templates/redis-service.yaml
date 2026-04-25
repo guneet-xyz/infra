@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.apps.infisical.redis.serviceName }}
+  namespace: {{ .Values.apps.infisical.namespace }}
+  labels:
+    app: {{ .Values.apps.infisical.redis.serviceName }}
+spec:
+  ports:
+    - name: redis
+      port: {{ .Values.apps.infisical.redis.port }}
+      targetPort: {{ .Values.apps.infisical.redis.port }}
+  selector:
+    app: {{ .Values.apps.infisical.redis.serviceName }}
