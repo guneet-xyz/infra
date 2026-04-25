@@ -28,6 +28,23 @@ From the `k3s/` directory:
 ./deploy.sh caddy uninstall
 ```
 
+## Routes
+
+### Public (`*.guneet.dev`)
+
+| Domain | Backend |
+|---|---|
+| `walls.guneet.dev` | walls |
+| `llm.guneet.dev` | litellm |
+
+### Private (`*.guneet.xyz`)
+
+| Domain | Backend |
+|---|---|
+| `headlamp.guneet.xyz` | headlamp |
+| `llm.guneet.xyz` | litellm |
+| `chat.guneet.xyz` | openwebui |
+
 ## Migration from caddy-public
 
 If upgrading from the old `caddy-public` chart:

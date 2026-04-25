@@ -28,6 +28,21 @@ From the `k3s/` directory:
 - Public: `https://llm.guneet.dev`
 - Private: `https://llm.guneet.xyz`
 
+## Models
+
+All models route through `github_copilot/`:
+
+- `claude-opus-4.5`
+- `claude-opus-4.6`
+- `claude-opus-4.6-1m`
+- `gpt-5.4`
+
+## Settings
+
+- `drop_params: true` — silently drops unsupported params instead of
+  erroring
+- `callbacks: ["smtp_email"]` — email notifications via SMTP
+
 ## Obscuro Secrets
 
 | Key | Description |

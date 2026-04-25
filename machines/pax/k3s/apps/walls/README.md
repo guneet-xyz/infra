@@ -7,28 +7,24 @@ Wallpaper sharing platform. Deploys the walls app with its own PostgreSQL databa
 From the `k3s/` directory:
 
 ```sh
-helm install walls ./apps/walls \
-  -n walls --create-namespace \
-  -f values-shared.yaml \
-  -f apps/walls/values.yaml \
-  --post-renderer obscuro --post-renderer-args inject
+./deploy.sh walls install
 ```
 
 ## Upgrade
 
 ```sh
-helm upgrade walls ./apps/walls \
-  -n walls \
-  -f values-shared.yaml \
-  -f apps/walls/values.yaml \
-  --post-renderer obscuro --post-renderer-args inject
+./deploy.sh walls upgrade
 ```
 
 ## Uninstall
 
 ```sh
-helm uninstall walls -n walls
+./deploy.sh walls uninstall
 ```
+
+## Access
+
+- Public: `https://walls.guneet.dev`
 
 ## Obscuro Secrets
 

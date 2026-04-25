@@ -6,7 +6,9 @@
 machines/pax/k3s/
 ├── AGENTS.md              # This file
 ├── deploy.sh              # Install/upgrade/uninstall charts
+├── backup.sh              # Backup and restore PVC data
 ├── validate.sh            # Validates all chart templates
+├── .gitignore             # Ignores backups/ directory
 ├── .obscuro/              # Encrypted secrets (safe to commit)
 ├── values-shared.yaml     # Cross-app references and shared config
 ├── shared/                # Shared Helm library charts
@@ -38,8 +40,8 @@ Services must be installed in this order due to dependencies:
 
 1. **caddy** — routes public and private traffic, no app dependencies
 2. **registry** — hosts container images for custom apps
-3. **apps** (walls, headlamp, etc.) — depend on registry for images and
-   caddy for routing
+3. **apps** (walls, headlamp, litellm, openwebui, etc.) — depend on
+   registry for images and caddy for routing
 
 ## Domain Convention
 
@@ -356,6 +358,32 @@ The script handles `-n <namespace> --create-namespace`, merging
 `values-shared.yaml`, and the Obscuro post-renderer.
 
 See each chart's `README.md` for additional details.
+
+## Backups
+
+Use `backup.sh` to back up and restore PVC data. The script SSHes into
+pax, tars each PVC's host directory, and SCPs the archives to the local
+machine under `backups/<timestamp>/`. During backup and restore, all
+deployments in the app's namespace are scaled to zero and restored to
+their original replica counts afterward.
+
+```sh
+./backup.sh backup                            # all apps
+./backup.sh backup walls                      # specific app
+./backup.sh restore walls                     # restore from latest backup
+./backup.sh restore litellm -- 2026-04-24_143000  # restore specific timestamp
+```
+
+### Adding a New App to Backups
+
+Edit `backup.sh` and add the app's PVCs to the `pvcs_for_app` function
+and `ALL_APPS` list.
+
+### Restore After Data Loss
+
+If PVCs were deleted (e.g., after `helm uninstall`), reinstall the chart
+first with `deploy.sh <chart> install` to recreate the PVCs, then run
+`backup.sh restore <app>`. The script resolves PVC host paths dynamically.
 
 ## Shared Library Charts
 
