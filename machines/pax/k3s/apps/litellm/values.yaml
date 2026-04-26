@@ -22,7 +22,7 @@ apps:
       port: 5432
       dbName: litellm
       dbUser: postgres
-      dbPassword: password
+      dbPassword: __LITELLM_POSTGRES_PASSWORD__
       storage: 5Gi
 
     storage:

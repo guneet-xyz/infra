@@ -19,12 +19,22 @@ spec:
     metadata:
       labels:
         app: {{ .Values.apps.infisical.appName }}
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/infisical-secret.yaml") . | sha256sum }}
     spec:
       nodeSelector:
         role: primary
       containers:
         - name: infisical
           image: {{ .Values.apps.infisical.images.infisical.image }}:{{ .Values.apps.infisical.images.infisical.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
           ports:
             - containerPort: {{ .Values.apps.infisical.port }}
               protocol: TCP

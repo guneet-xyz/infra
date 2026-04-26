@@ -20,7 +20,7 @@ apps:
       port: 5432
       dbName: walls
       dbUser: walls
-      dbPassword: walls
+      dbPassword: __WALLS_POSTGRES_PASSWORD__
       storage: 5Gi
 
     claims:

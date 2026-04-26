@@ -19,6 +19,9 @@ spec:
     metadata:
       labels:
         app: {{ .Values.apps.registry.appName }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/registry-configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/registry-secret.yaml") . | sha256sum }}
     spec:
       nodeSelector:
         role: primary

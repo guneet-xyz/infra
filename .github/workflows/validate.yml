@@ -1,0 +1,29 @@
+name: Validate Helm Charts
+
+on:
+  push:
+    paths:
+      - "machines/pax/k3s/**"
+  pull_request:
+    paths:
+      - "machines/pax/k3s/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Update Helm dependencies
+        run: |
+          for chart_dir in machines/pax/k3s/apps/*/; do
+            if [ -f "$chart_dir/Chart.yaml" ] && grep -q 'dependencies:' "$chart_dir/Chart.yaml"; then
+              helm dependency update "$chart_dir"
+            fi
+          done
+
+      - name: Validate charts
+        run: ./machines/pax/k3s/validate.sh

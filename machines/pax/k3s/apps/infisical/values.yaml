@@ -3,10 +3,10 @@ apps:
     images:
       infisical:
         image: infisical/infisical
-        imageTag: latest
+        imageTag: "v0.159.22"
       redis:
         image: redis
-        imageTag: latest
+        imageTag: "8.4.2-alpine3.22"
       postgres:
         image: postgres
         imageTag: "17.9-alpine"

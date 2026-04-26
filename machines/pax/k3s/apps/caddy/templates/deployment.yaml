@@ -22,6 +22,9 @@ spec:
     metadata:
       labels:
         app: {{ $.Values.apps.caddy.appName }}-{{ $variant }}
+      annotations:
+        checksum/caddyfile: {{ include (print $.Template.BasePath "/" $variant "-configmap.yaml") $ | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/cloudflare-secret.yaml") $ | sha256sum }}
     spec:
       nodeSelector:
         role: primary

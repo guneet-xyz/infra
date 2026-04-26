@@ -19,6 +19,8 @@ spec:
     metadata:
       labels:
         app: {{ .Values.apps.walls.appName }}
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/walls-secret.yaml") . | sha256sum }}
     spec:
       nodeSelector:
         role: primary

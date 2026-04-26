@@ -17,7 +17,6 @@ rules:
       - pods
       - pods/log
       - replicationcontrollers
-      - secrets
       - serviceaccounts
       - services
     verbs: ["get", "list", "watch"]

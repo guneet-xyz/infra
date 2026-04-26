@@ -22,6 +22,14 @@ spec:
       containers:
         - name: redis
           image: {{ .Values.apps.infisical.images.redis.image }}:{{ .Values.apps.infisical.images.redis.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
           ports:
             - containerPort: {{ .Values.apps.infisical.redis.port }}
               protocol: TCP

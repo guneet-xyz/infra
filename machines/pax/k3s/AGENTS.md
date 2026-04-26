@@ -294,10 +294,20 @@ Helm values.
 |---|---|
 | `CLOUDFLARE_API_TOKEN` | caddy |
 | `WALLS_AUTH_SECRET` | walls |
-| `SMTP_USERNAME` | shared (all apps needing email) |
-| `SMTP_PASSWORD` | shared (all apps needing email) |
+| `WALLS_POSTGRES_PASSWORD` | walls (postgres) |
+| `SMTP_USERNAME` | shared (walls, litellm, infisical) |
+| `SMTP_PASSWORD` | shared (walls, litellm, infisical) |
 | `GITHUB_API_KEY` | litellm |
 | `LITELLM_MASTER_KEY` | litellm |
+| `LITELLM_POSTGRES_PASSWORD` | litellm (postgres) |
+| `INFISICAL_AUTH_SECRET` | infisical |
+| `INFISICAL_ENCRYPTION_KEY` | infisical |
+| `INFISICAL_DB_CONNECTION_URI` | infisical |
+| `INFISICAL_POSTGRES_PASSWORD` | infisical (postgres) |
+| `REGISTRY_HTPASSWD` | registry |
+| `REGISTRY_USERNAME` | registry-ui |
+| `REGISTRY_PASSWORD` | registry-ui |
+| `REGISTRY_SESSION_SECRET` | registry-ui |
 
 ## Shared Config
 

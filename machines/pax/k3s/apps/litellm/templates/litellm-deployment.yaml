@@ -19,6 +19,9 @@ spec:
     metadata:
       labels:
         app: {{ .Values.apps.litellm.appName }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/litellm-configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/litellm-secret.yaml") . | sha256sum }}
     spec:
       nodeSelector:
         role: primary

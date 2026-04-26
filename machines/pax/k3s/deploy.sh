@@ -45,6 +45,7 @@ case "$ACTION" in
       -n "$NAMESPACE" --create-namespace \
       -f "$SHARED_VALUES" \
       -f "$CHART_DIR/values.yaml" \
+      --atomic --wait \
       --post-renderer obscuro --post-renderer-args inject
     ;;
   upgrade)
@@ -53,6 +54,7 @@ case "$ACTION" in
       -n "$NAMESPACE" \
       -f "$SHARED_VALUES" \
       -f "$CHART_DIR/values.yaml" \
+      --atomic --wait \
       --post-renderer obscuro --post-renderer-args inject
     ;;
   uninstall)
