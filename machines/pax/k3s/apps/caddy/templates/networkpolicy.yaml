@@ -1,0 +1,34 @@
+# Default deny all ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: {{ .Values.apps.caddy.namespace }}
+  labels:
+    app: {{ .Values.apps.caddy.appName }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+# Allow external traffic to Caddy on ports 80, 443
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-external
+  namespace: {{ .Values.apps.caddy.namespace }}
+  labels:
+    app: {{ .Values.apps.caddy.appName }}
+spec:
+  podSelector:
+    matchLabels: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 80
+          protocol: TCP
+        - port: 443
+          protocol: TCP
+        - port: 443
+          protocol: UDP

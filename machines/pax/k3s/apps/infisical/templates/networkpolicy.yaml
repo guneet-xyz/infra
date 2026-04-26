@@ -1,0 +1,81 @@
+# Default deny all ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: {{ .Values.apps.infisical.namespace }}
+  labels:
+    app: {{ .Values.apps.infisical.appName }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+# Allow Caddy to reach Infisical
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-caddy
+  namespace: {{ .Values.apps.infisical.namespace }}
+  labels:
+    app: {{ .Values.apps.infisical.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.infisical.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.apps.caddy.namespace }}
+      ports:
+        - port: {{ .Values.apps.infisical.port }}
+          protocol: TCP
+---
+# Allow Infisical app to reach its Postgres
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres
+  namespace: {{ .Values.apps.infisical.namespace }}
+  labels:
+    app: {{ .Values.apps.infisical.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.infisical.postgres.serviceName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ .Values.apps.infisical.appName }}
+      ports:
+        - port: {{ .Values.apps.infisical.postgres.port }}
+          protocol: TCP
+---
+# Allow Infisical app to reach its Redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-redis
+  namespace: {{ .Values.apps.infisical.namespace }}
+  labels:
+    app: {{ .Values.apps.infisical.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.infisical.redis.serviceName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ .Values.apps.infisical.appName }}
+      ports:
+        - port: {{ .Values.apps.infisical.redis.port }}
+          protocol: TCP

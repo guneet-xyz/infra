@@ -1,0 +1,81 @@
+# Default deny all ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: {{ .Values.apps.litellm.namespace }}
+  labels:
+    app: {{ .Values.apps.litellm.appName }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+# Allow Caddy to reach LiteLLM (public + private routes)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-caddy
+  namespace: {{ .Values.apps.litellm.namespace }}
+  labels:
+    app: {{ .Values.apps.litellm.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.litellm.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.apps.caddy.namespace }}
+      ports:
+        - port: {{ .Values.apps.litellm.port }}
+          protocol: TCP
+---
+# Allow Open WebUI to reach LiteLLM (direct cluster DNS)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-openwebui
+  namespace: {{ .Values.apps.litellm.namespace }}
+  labels:
+    app: {{ .Values.apps.litellm.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.litellm.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.apps.openwebui.namespace }}
+      ports:
+        - port: {{ .Values.apps.litellm.port }}
+          protocol: TCP
+---
+# Allow LiteLLM app to reach its Postgres
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres
+  namespace: {{ .Values.apps.litellm.namespace }}
+  labels:
+    app: {{ .Values.apps.litellm.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.litellm.postgres.serviceName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ .Values.apps.litellm.appName }}
+      ports:
+        - port: {{ .Values.apps.litellm.postgres.port }}
+          protocol: TCP
