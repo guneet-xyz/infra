@@ -1,0 +1,15 @@
+apps:
+  demo:
+    images:
+      ssh:
+        image: lscr.io/linuxserver/openssh-server
+        imageTag: "latest"
+
+    replicas: 1
+
+    sshPort: 2222
+
+    claims:
+      config: demo-config
+
+    storage: 1Gi

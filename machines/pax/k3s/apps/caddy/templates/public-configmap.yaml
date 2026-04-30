@@ -27,3 +27,7 @@ data:
     infisical.guneet.dev {
     	reverse_proxy {{ .Values.apps.infisical.appName }}.{{ .Values.apps.infisical.namespace }}.svc.cluster.local:{{ .Values.apps.infisical.port }}
     }
+    
+    demo.guneet.dev {
+    	reverse_proxy {{ .Values.apps.demo.appName }}.{{ .Values.apps.demo.namespace }}.svc.cluster.local:{{ .Values.apps.demo.port }}
+    }

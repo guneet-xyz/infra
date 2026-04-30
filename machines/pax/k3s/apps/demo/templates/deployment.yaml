@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.demo.appName }}
+  namespace: {{ .Values.apps.demo.namespace }}
+  labels:
+    app: {{ .Values.apps.demo.appName }}
+spec:
+  replicas: {{ .Values.apps.demo.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.demo.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.demo.appName }}
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: ssh
+          image: {{ .Values.apps.demo.images.ssh.image }}:{{ .Values.apps.demo.images.ssh.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
+            - name: USER_NAME
+              value: "guneet"
+            - name: PUBLIC_KEY_FILE
+              value: "/keys/authorized_keys"
+            - name: SUDO_ACCESS
+              value: "false"
+            - name: PASSWORD_ACCESS
+              value: "false"
+            - name: LOG_STDOUT
+              value: "true"
+          ports:
+            - containerPort: {{ .Values.apps.demo.sshPort }}
+              protocol: TCP
+            - containerPort: {{ .Values.apps.demo.port }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.apps.demo.sshPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.apps.demo.sshPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /config
+              name: {{ .Values.apps.demo.claims.config }}
+            - mountPath: /keys
+              name: ssh-keys
+              readOnly: true
+            - mountPath: /config/sshd/sshd_config.d
+              name: sshd-config
+              readOnly: true
+      volumes:
+        - name: {{ .Values.apps.demo.claims.config }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.demo.claims.config }}
+        - name: ssh-keys
+          secret:
+            secretName: ssh-secret
+            defaultMode: 0600
+        - name: sshd-config
+          configMap:
+            name: sshd-config

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sshd-config
+  namespace: {{ .Values.apps.demo.namespace }}
+  labels:
+    app: {{ .Values.apps.demo.appName }}
+data:
+  custom.conf: |
+    GatewayPorts yes
+    AllowTcpForwarding yes
+    PermitTunnel yes

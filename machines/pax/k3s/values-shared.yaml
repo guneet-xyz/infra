@@ -30,6 +30,10 @@ apps:
     appName: portainer
     namespace: portainer
     port: 9000
+  demo:
+    appName: demo
+    namespace: demo
+    port: 80
   tailscale:
     appName: tailscale-operator
     namespace: tailscale

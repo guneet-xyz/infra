@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.apps.demo.appName }}
+  namespace: {{ .Values.apps.demo.namespace }}
+  labels:
+    app: {{ .Values.apps.demo.appName }}
+spec:
+  ports:
+    - name: http
+      port: {{ .Values.apps.demo.port }}
+      targetPort: {{ .Values.apps.demo.port }}
+  selector:
+    app: {{ .Values.apps.demo.appName }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.apps.demo.appName }}-ssh
+  namespace: {{ .Values.apps.demo.namespace }}
+  labels:
+    app: {{ .Values.apps.demo.appName }}
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/hostname: "demo"
+spec:
+  ports:
+    - name: ssh
+      port: 22
+      targetPort: {{ .Values.apps.demo.sshPort }}
+  selector:
+    app: {{ .Values.apps.demo.appName }}
