@@ -386,6 +386,8 @@ Helm values.
 | `REGISTRY_USERNAME` | registry-ui |
 | `REGISTRY_PASSWORD` | registry-ui |
 | `REGISTRY_SESSION_SECRET` | registry-ui |
+| `TS_CLIENT_ID` | tailscale |
+| `TS_CLIENT_SECRET` | tailscale |
 
 ## Shared Config
 

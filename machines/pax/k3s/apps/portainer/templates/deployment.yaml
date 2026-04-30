@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.portainer.appName }}
+  namespace: {{ .Values.apps.portainer.namespace }}
+  labels:
+    app: {{ .Values.apps.portainer.appName }}
+spec:
+  replicas: {{ .Values.apps.portainer.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.portainer.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.portainer.appName }}
+    spec:
+      serviceAccountName: {{ .Values.apps.portainer.appName }}
+      nodeSelector:
+        role: primary
+      containers:
+        - name: portainer
+          image: {{ .Values.apps.portainer.images.portainer.image }}:{{ .Values.apps.portainer.images.portainer.imageTag }}
+          ports:
+            - containerPort: {{ .Values.apps.portainer.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.apps.portainer.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.apps.portainer.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.portainer.claims.data }}

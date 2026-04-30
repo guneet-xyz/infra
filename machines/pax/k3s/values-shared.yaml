@@ -26,6 +26,13 @@ apps:
     appName: infisical
     namespace: infisical
     port: 8080
+  portainer:
+    appName: portainer
+    namespace: portainer
+    port: 9000
+  tailscale:
+    appName: tailscale-operator
+    namespace: tailscale
   registry:
     appName: registry
     namespace: registry

@@ -1,0 +1,6 @@
+tailscale-operator:
+  oauth:
+    clientId: __TS_CLIENT_ID__
+    clientSecret: __TS_CLIENT_SECRET__
+  nodeSelector:
+    role: primary

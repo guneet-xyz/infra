@@ -1,0 +1,11 @@
+apps:
+  portainer:
+    images:
+      portainer:
+        image: portainer/portainer-ce
+        imageTag: lts
+    replicas: 1
+    claims:
+      data: portainer-data
+    storage:
+      data: 1Gi
