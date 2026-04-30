@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fallback-page
+  namespace: {{ .Values.apps.demo.namespace }}
+  labels:
+    app: {{ .Values.apps.demoFallback.appName }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>demo.guneet.dev</title>
+      <style>
+        body {
+          font-family: system-ui, -apple-system, sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          background: #111;
+          color: #fff;
+        }
+        h1 {
+          font-size: 2rem;
+          font-weight: 400;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>nothing to see here :P</h1>
+    </body>
+    </html>

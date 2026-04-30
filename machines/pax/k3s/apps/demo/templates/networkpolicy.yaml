@@ -34,6 +34,29 @@ spec:
         - port: {{ .Values.apps.demo.port }}
           protocol: TCP
 ---
+# Allow Caddy to reach the fallback page
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-fallback-from-caddy
+  namespace: {{ .Values.apps.demo.namespace }}
+  labels:
+    app: {{ .Values.apps.demoFallback.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.demoFallback.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.apps.caddy.namespace }}
+      ports:
+        - port: {{ .Values.apps.demoFallback.port }}
+          protocol: TCP
+---
 # Allow Tailscale operator to reach SSH on port 2222
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

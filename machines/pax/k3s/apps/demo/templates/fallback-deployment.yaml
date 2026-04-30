@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.demoFallback.appName }}
+  namespace: {{ .Values.apps.demo.namespace }}
+  labels:
+    app: {{ .Values.apps.demoFallback.appName }}
+spec:
+  replicas: {{ .Values.apps.demo.fallback.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.demoFallback.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.demoFallback.appName }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/fallback-configmap.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: caddy
+          image: {{ .Values.apps.demo.fallback.images.caddy.image }}:{{ .Values.apps.demo.fallback.images.caddy.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 32Mi
+          ports:
+            - containerPort: {{ .Values.apps.demoFallback.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apps.demoFallback.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apps.demoFallback.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /usr/share/caddy
+              name: fallback-page
+              readOnly: true
+      volumes:
+        - name: fallback-page
+          configMap:
+            name: fallback-page

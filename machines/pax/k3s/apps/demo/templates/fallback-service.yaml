@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.apps.demoFallback.appName }}
+  namespace: {{ .Values.apps.demo.namespace }}
+  labels:
+    app: {{ .Values.apps.demoFallback.appName }}
+spec:
+  ports:
+    - name: http
+      port: {{ .Values.apps.demoFallback.port }}
+      targetPort: {{ .Values.apps.demoFallback.port }}
+  selector:
+    app: {{ .Values.apps.demoFallback.appName }}

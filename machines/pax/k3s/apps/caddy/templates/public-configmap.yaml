@@ -29,5 +29,8 @@ data:
     }
     
     demo.guneet.dev {
+    	handle_errors 502 {
+    		reverse_proxy {{ .Values.apps.demoFallback.appName }}.{{ .Values.apps.demoFallback.namespace }}.svc.cluster.local:{{ .Values.apps.demoFallback.port }}
+    	}
     	reverse_proxy {{ .Values.apps.demo.appName }}.{{ .Values.apps.demo.namespace }}.svc.cluster.local:{{ .Values.apps.demo.port }}
     }

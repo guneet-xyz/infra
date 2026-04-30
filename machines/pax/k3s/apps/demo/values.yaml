@@ -13,3 +13,10 @@ apps:
       config: demo-config
 
     storage: 1Gi
+
+    fallback:
+      replicas: 1
+      images:
+        caddy:
+          image: caddy
+          imageTag: "2-alpine"
