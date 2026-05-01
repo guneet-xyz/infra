@@ -1,0 +1,11 @@
+apps:
+  homepage:
+    images:
+      homepage:
+        image: ghcr.io/gethomepage/homepage
+        imageTag: "latest"
+
+    replicas: 1
+
+    configMaps:
+      config: homepage-config

@@ -33,3 +33,26 @@ spec:
       ports:
         - port: {{ .Values.apps.portainer.port }}
           protocol: TCP
+---
+# Allow homepage to reach Portainer
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-homepage
+  namespace: {{ .Values.apps.portainer.namespace }}
+  labels:
+    app: {{ .Values.apps.portainer.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.portainer.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.apps.homepage.namespace }}
+      ports:
+        - port: {{ .Values.apps.portainer.port }}
+          protocol: TCP

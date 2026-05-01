@@ -1,0 +1,35 @@
+# Default deny all ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: {{ .Values.apps.homepage.namespace }}
+  labels:
+    app: {{ .Values.apps.homepage.appName }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+# Allow Caddy to reach Homepage on port 3000
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-caddy
+  namespace: {{ .Values.apps.homepage.namespace }}
+  labels:
+    app: {{ .Values.apps.homepage.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.homepage.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.apps.caddy.namespace }}
+      ports:
+        - port: {{ .Values.apps.homepage.port }}
+          protocol: TCP

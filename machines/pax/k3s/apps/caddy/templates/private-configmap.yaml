@@ -36,3 +36,7 @@ data:
     portainer.guneet.xyz {
     	reverse_proxy {{ .Values.apps.portainer.appName }}.{{ .Values.apps.portainer.namespace }}.svc.cluster.local:{{ .Values.apps.portainer.port }}
     }
+
+    home.guneet.xyz {
+    	reverse_proxy {{ .Values.apps.homepage.appName }}.{{ .Values.apps.homepage.namespace }}.svc.cluster.local:{{ .Values.apps.homepage.port }}
+    }

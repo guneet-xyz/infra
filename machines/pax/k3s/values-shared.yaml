@@ -38,6 +38,10 @@ apps:
     appName: demo-fallback
     namespace: demo
     port: 80
+  homepage:
+    appName: homepage
+    namespace: homepage
+    port: 3000
   tailscale:
     appName: tailscale-operator
     namespace: tailscale

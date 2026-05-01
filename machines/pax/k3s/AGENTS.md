@@ -388,6 +388,7 @@ Helm values.
 | `REGISTRY_SESSION_SECRET` | registry-ui |
 | `TS_CLIENT_ID` | tailscale |
 | `TS_CLIENT_SECRET` | tailscale |
+| `DEMO_SSH_AUTHORIZED_KEYS` | demo (SSH public keys, one per line) |
 
 ## Shared Config
 
