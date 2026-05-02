@@ -18,6 +18,11 @@ data:
         model: github_copilot/claude-opus-4.6
       model_info:
         supports_vision: True
+    - model_name: claude-opus-4.7
+      litellm_params:
+        model: github_copilot/claude-opus-4.7
+      model_info:
+        supports_vision: True
     - model_name: claude-opus-4.6-1m
       litellm_params:
         model: github_copilot/claude-opus-4.6-1m
