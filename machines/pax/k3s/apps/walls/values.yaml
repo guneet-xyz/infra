@@ -26,5 +26,3 @@ apps:
     claims:
       postgresData: walls-postgres-data
 
-smtp:
-  mailFrom: noreply@guneet.dev

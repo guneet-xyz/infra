@@ -39,11 +39,8 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
           resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
             limits:
-              memory: 256Mi
+              memory: 512Mi
           ports:
             - containerPort: {{ .Values.apps.walls.port }}
               protocol: TCP

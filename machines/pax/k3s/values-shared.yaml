@@ -57,4 +57,4 @@ apps:
 smtp:
   host: smtp.azurecomm.net
   port: "587"
-  mailFrom: noreply@guneet.xyz
+  mailFrom: donotreply@guneet.xyz
