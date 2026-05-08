@@ -28,12 +28,29 @@ data:
         model: github_copilot/claude-opus-4.6-1m
       model_info:
         supports_vision: True
+    - model_name: claude-sonnet-4.6
+      litellm_params:
+        model: github_copilot/claude-sonnet-4.6
+      model_info:
+        supports_vision: True
+    - model_name: claude-haiku-4.5
+      litellm_params:
+        model: github_copilot/claude-haiku-4.5
+      model_info:
+        supports_vision: True
     - model_name: gpt-5.4
       litellm_params:
         model: github_copilot/gpt-5.4
       model_info:
         supports_vision: True
         base_model: openai/gpt-5.4
+    - model_name: gpt-5.5
+      litellm_params:
+        model: github_copilot/gpt-5.5
+      model_info:
+        supports_vision: True
+        base_model: openai/gpt-5.5
+
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
