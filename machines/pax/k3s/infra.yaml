@@ -1,0 +1,63 @@
+apiVersion: easyinfra/v2
+cluster:
+  name: k3s
+  type: k3s
+  kubeContext: k3s
+defaults:
+  valueFiles: [values-shared.yaml]
+apps:
+  # discovered at: apps/caddy
+  - name: caddy
+    chart: apps/caddy
+    namespace: caddy
+    valueFiles: [values.yaml]
+  # discovered at: apps/demo
+  - name: demo
+    chart: apps/demo
+    namespace: demo
+    valueFiles: [values.yaml]
+  # discovered at: apps/headlamp
+  - name: headlamp
+    chart: apps/headlamp
+    namespace: headlamp
+    valueFiles: [values.yaml]
+  # discovered at: apps/homepage
+  - name: homepage
+    chart: apps/homepage
+    namespace: homepage
+    valueFiles: [values.yaml]
+  # discovered at: apps/infisical
+  - name: infisical
+    chart: apps/infisical
+    namespace: infisical
+    valueFiles: [values.yaml]
+  # discovered at: apps/litellm
+  - name: litellm
+    chart: apps/litellm
+    namespace: litellm
+    valueFiles: [values.yaml]
+  # discovered at: apps/openwebui
+  - name: openwebui
+    chart: apps/openwebui
+    namespace: openwebui
+    valueFiles: [values.yaml]
+  # discovered at: apps/portainer
+  - name: portainer
+    chart: apps/portainer
+    namespace: portainer
+    valueFiles: [values.yaml]
+  # discovered at: apps/registry
+  - name: registry
+    chart: apps/registry
+    namespace: registry
+    valueFiles: [values.yaml]
+  # discovered at: apps/tailscale
+  - name: tailscale
+    chart: apps/tailscale
+    namespace: tailscale
+    valueFiles: [values.yaml]
+  # discovered at: apps/walls
+  - name: walls
+    chart: apps/walls
+    namespace: walls
+    valueFiles: [values.yaml]
