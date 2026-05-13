@@ -1,0 +1,47 @@
+name: Validate with easyinfra
+
+on:
+  push:
+    paths:
+      - "machines/pax/k3s/**"
+  pull_request:
+    paths:
+      - "machines/pax/k3s/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout easyinfra
+        uses: actions/checkout@v4
+        with:
+          repository: guneet-xyz/easyinfra
+          path: easyinfra
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Build easyinfra
+        run: |
+          cd easyinfra
+          go build -o /tmp/easyinfra ./cmd/easyinfra
+          sudo mv /tmp/easyinfra /usr/local/bin/easyinfra
+          chmod +x /usr/local/bin/easyinfra
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Update Helm dependencies
+        run: |
+          for chart_dir in machines/pax/k3s/apps/*/; do
+            if [ -f "$chart_dir/Chart.yaml" ] && grep -q 'dependencies:' "$chart_dir/Chart.yaml"; then
+              helm dependency update "$chart_dir"
+            fi
+          done
+
+      - name: Validate with easyinfra
+        run: easyinfra k3s ci validate --config machines/pax/k3s/infra.yaml
