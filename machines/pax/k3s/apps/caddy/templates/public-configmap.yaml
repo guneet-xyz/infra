@@ -34,3 +34,15 @@ data:
     	}
     	reverse_proxy {{ .Values.apps.demo.appName }}.{{ .Values.apps.demo.namespace }}.svc.cluster.local:{{ .Values.apps.demo.port }}
     }
+
+    books.guneet.dev {
+    	reverse_proxy https://books.guneet.xyz {
+    		header_up Host {upstream_hostport}
+    	}
+    }
+
+    abs.guneet.dev {
+    	reverse_proxy https://abs.guneet.xyz {
+    		header_up Host {upstream_hostport}
+    	}
+    }
