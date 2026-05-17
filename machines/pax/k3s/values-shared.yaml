@@ -38,6 +38,11 @@ apps:
     appName: demo-fallback
     namespace: demo
     port: 80
+  devDb:
+    appName: dev-db
+    namespace: dev-db
+    port: 3000
+    postgresPort: 5432 # raw TCP for caddy-private layer4
   homepage:
     appName: homepage
     namespace: homepage
