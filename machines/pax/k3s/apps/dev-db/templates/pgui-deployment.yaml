@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.devDb.appName }}
+  namespace: {{ .Values.apps.devDb.namespace }}
+  labels:
+    app: {{ .Values.apps.devDb.appName }}
+spec:
+  replicas: {{ .Values.apps.devDb.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.devDb.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.devDb.appName }}
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/pgui-secret.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: pgui
+          image: {{ .Values.apps.devDb.images.pgui.image }}:{{ .Values.apps.devDb.images.pgui.imageTag }}
+          ports:
+            - containerPort: {{ .Values.apps.devDb.port }}
+              protocol: TCP
+          env:
+            - name: DB_1_HOST
+              value: {{ .Values.apps.devDb.postgres.serviceName }}.{{ .Values.apps.devDb.namespace }}.svc.cluster.local
+            - name: DB_1_PORT
+              value: "{{ .Values.apps.devDb.postgres.port }}"
+            - name: DB_1_USERNAME
+              value: {{ .Values.apps.devDb.postgres.dbUser }}
+            - name: DB_1_DISPLAY_NAME
+              value: "dev-db"
+            - name: DB_1_AUTODISCOVER
+              value: "true"
+          envFrom:
+            - secretRef:
+                name: pgui-secret
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apps.devDb.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apps.devDb.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi

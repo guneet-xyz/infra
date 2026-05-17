@@ -1,0 +1,24 @@
+apps:
+  devDb:
+    images:
+      pgui:
+        image: kvqn/pgui
+        imageTag: "latest"
+      postgres:
+        image: postgres
+        imageTag: "17.9-alpine"
+
+    replicas: 1
+
+    domain: db.guneet.xyz
+
+    postgres:
+      serviceName: dev-db-postgres
+      port: 5432
+      dbName: devdb
+      dbUser: devdb
+      dbPassword: __DEVDB_POSTGRES_PASSWORD__
+      storage: 5Gi
+
+    claims:
+      postgresData: dev-db-postgres-data

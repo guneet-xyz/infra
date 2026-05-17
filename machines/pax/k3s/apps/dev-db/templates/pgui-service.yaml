@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.apps.devDb.appName }}
+  namespace: {{ .Values.apps.devDb.namespace }}
+  labels:
+    app: {{ .Values.apps.devDb.appName }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.apps.devDb.appName }}
+  ports:
+    - name: http
+      port: {{ .Values.apps.devDb.port }}
+      targetPort: {{ .Values.apps.devDb.port }}
+      protocol: TCP
