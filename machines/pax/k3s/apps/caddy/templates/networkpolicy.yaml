@@ -32,3 +32,5 @@ spec:
           protocol: TCP
         - port: 443
           protocol: UDP
+        - port: {{ .Values.apps.devDb.postgresPort }}
+          protocol: TCP

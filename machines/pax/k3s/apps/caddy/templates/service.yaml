@@ -23,6 +23,12 @@ spec:
       port: 443
       protocol: UDP
       targetPort: 443
+    {{- if eq $variant "private" }}
+    - name: postgres
+      port: {{ $.Values.apps.devDb.postgresPort }}
+      targetPort: {{ $.Values.apps.devDb.postgresPort }}
+      protocol: TCP
+    {{- end }}
   selector:
     app: {{ $.Values.apps.caddy.appName }}-{{ $variant }}
 {{- end }}

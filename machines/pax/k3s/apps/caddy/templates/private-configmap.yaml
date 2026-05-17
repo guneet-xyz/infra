@@ -10,6 +10,15 @@ data:
     {
     	email guneetaggarwal@gmail.com
     	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    	layer4 {
+    		:{{ .Values.apps.devDb.postgresPort }} {
+    			route {
+    				proxy {
+    					upstream dev-db-postgres.{{ .Values.apps.devDb.namespace }}.svc.cluster.local:{{ .Values.apps.devDb.postgresPort }}
+    				}
+    			}
+    		}
+    	}
     }
     
     :80 {
@@ -39,4 +48,8 @@ data:
 
     home.guneet.xyz {
     	reverse_proxy {{ .Values.apps.homepage.appName }}.{{ .Values.apps.homepage.namespace }}.svc.cluster.local:{{ .Values.apps.homepage.port }}
+    }
+
+    db.guneet.xyz {
+    	reverse_proxy {{ .Values.apps.devDb.appName }}.{{ .Values.apps.devDb.namespace }}.svc.cluster.local:{{ .Values.apps.devDb.port }}
     }

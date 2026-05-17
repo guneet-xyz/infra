@@ -30,7 +30,7 @@ spec:
         role: primary
       containers:
         - name: caddy
-          image: {{ $.Values.apps.caddy.images.caddy.image }}:{{ $.Values.apps.caddy.images.caddy.imageTag }}
+          image: {{ $variantValues.images.caddy.image }}:{{ $variantValues.images.caddy.imageTag }}
           securityContext:
             allowPrivilegeEscalation: false
           resources:
@@ -52,6 +52,10 @@ spec:
               protocol: TCP
             - containerPort: 443
               protocol: UDP
+            {{- if eq $variant "private" }}
+            - containerPort: {{ $.Values.apps.devDb.postgresPort }}
+              protocol: TCP
+            {{- end }}
           readinessProbe:
             httpGet:
               path: /healthz

@@ -1,10 +1,5 @@
 apps:
   caddy:
-    images:
-      caddy:
-        image: caddybuilds/caddy-cloudflare
-        imageTag: "2.11.2"
-
     claims:
       data: caddy-data
 
@@ -13,11 +8,19 @@ apps:
     public:
       replicas: 1
       externalIP: "172.16.0.5"
+      images:
+        caddy:
+          image: caddybuilds/caddy-cloudflare
+          imageTag: "2.11.2"
       configMaps:
         caddyfile: caddy-public-caddyfile
 
     private:
       replicas: 1
       externalIP: "100.100.1.3"
+      images:
+        caddy:
+          image: kvqn/caddy-cloudflare-l4
+          imageTag: "2.11.3"
       configMaps:
         caddyfile: caddy-private-caddyfile
