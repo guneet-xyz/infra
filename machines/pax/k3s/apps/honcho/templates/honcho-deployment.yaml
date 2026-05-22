@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.honcho.appName }}
+  namespace: {{ .Values.apps.honcho.namespace }}
+  labels:
+    app: {{ .Values.apps.honcho.appName }}
+spec:
+  replicas: {{ .Values.apps.honcho.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.honcho.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.honcho.appName }}
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/honcho-secret.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: honcho
+          image: {{ .Values.apps.honcho.images.honcho.image }}:{{ .Values.apps.honcho.images.honcho.imageTag }}
+          command: ["sh", "/app/docker/entrypoint.sh"]
+          ports:
+            - containerPort: {{ .Values.apps.honcho.port }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: app-secret
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.apps.honcho.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.apps.honcho.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 10

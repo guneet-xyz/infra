@@ -1,0 +1,26 @@
+apps:
+  honcho:
+    images:
+      honcho:
+        image: ghcr.io/plastic-labs/honcho
+        imageTag: "v3.0.7"
+      postgres:
+        image: pgvector/pgvector
+        imageTag: "pg16"
+      redis:
+        image: redis
+        imageTag: "8.2-alpine"
+    replicas: 1
+    claims:
+      postgresData: honcho-postgres-data
+    postgres:
+      serviceName: honcho-postgres
+      port: 5432
+      dbName: honcho
+      dbUser: honcho
+      dbPassword: __HONCHO_POSTGRES_PASSWORD__
+      storage: 1Gi
+      initScripts: honcho-postgres-init
+    redis:
+      serviceName: honcho-redis
+      port: 6379

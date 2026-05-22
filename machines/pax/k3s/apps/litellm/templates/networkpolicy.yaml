@@ -72,10 +72,33 @@ spec:
   policyTypes:
     - Ingress
   ingress:
+     - from:
+         - podSelector:
+             matchLabels:
+               app: {{ .Values.apps.litellm.appName }}
+       ports:
+         - port: {{ .Values.apps.litellm.postgres.port }}
+           protocol: TCP
+---
+# Allow Honcho to reach LiteLLM (LLM routing)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-honcho
+  namespace: {{ .Values.apps.litellm.namespace }}
+  labels:
+    app: {{ .Values.apps.litellm.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.litellm.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
     - from:
-        - podSelector:
+        - namespaceSelector:
             matchLabels:
-              app: {{ .Values.apps.litellm.appName }}
+              kubernetes.io/metadata.name: {{ .Values.apps.honcho.namespace }}
       ports:
-        - port: {{ .Values.apps.litellm.postgres.port }}
+        - port: {{ .Values.apps.litellm.port }}
           protocol: TCP

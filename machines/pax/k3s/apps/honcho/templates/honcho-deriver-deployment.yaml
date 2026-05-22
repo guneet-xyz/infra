@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.honcho.appName }}-deriver
+  namespace: {{ .Values.apps.honcho.namespace }}
+  labels:
+    app: {{ .Values.apps.honcho.appName }}-deriver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.honcho.appName }}-deriver
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.honcho.appName }}-deriver
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/honcho-secret.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      initContainers:
+        - name: wait-for-api
+          image: curlimages/curl:8.10.1
+          command:
+            - sh
+            - -c
+            - |
+              until curl -sf http://{{ .Values.apps.honcho.appName }}.{{ .Values.apps.honcho.namespace }}.svc.cluster.local:{{ .Values.apps.honcho.port }}/health; do
+                echo "Waiting for honcho api..."; sleep 5;
+              done
+      containers:
+        - name: deriver
+          image: {{ .Values.apps.honcho.images.honcho.image }}:{{ .Values.apps.honcho.images.honcho.imageTag }}
+          command: ["/app/.venv/bin/python", "-m", "src.deriver"]
+          envFrom:
+            - secretRef:
+                name: app-secret
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pgrep -f 'src.deriver' >/dev/null"]
+            initialDelaySeconds: 30
+            periodSeconds: 30

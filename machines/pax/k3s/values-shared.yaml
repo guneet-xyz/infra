@@ -47,6 +47,10 @@ apps:
     appName: homepage
     namespace: homepage
     port: 3000
+  honcho:
+    appName: honcho
+    namespace: honcho
+    port: 8000
   tailscale:
     appName: tailscale-operator
     namespace: tailscale

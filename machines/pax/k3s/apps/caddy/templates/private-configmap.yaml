@@ -53,3 +53,9 @@ data:
     db.guneet.xyz {
     	reverse_proxy {{ .Values.apps.devDb.appName }}.{{ .Values.apps.devDb.namespace }}.svc.cluster.local:{{ .Values.apps.devDb.port }}
     }
+
+    honcho.guneet.xyz {
+    	@root path /
+    	redir @root /docs 307
+    	reverse_proxy {{ .Values.apps.honcho.appName }}.{{ .Values.apps.honcho.namespace }}.svc.cluster.local:{{ .Values.apps.honcho.port }}
+    }

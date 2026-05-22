@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.honcho.redis.serviceName }}
+  namespace: {{ .Values.apps.honcho.namespace }}
+  labels:
+    app: {{ .Values.apps.honcho.redis.serviceName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.honcho.redis.serviceName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.honcho.redis.serviceName }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: redis
+          image: {{ .Values.apps.honcho.images.redis.image }}:{{ .Values.apps.honcho.images.redis.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+          ports:
+            - containerPort: {{ .Values.apps.honcho.redis.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+      volumes:
+        - name: redis-data
+          emptyDir: {}

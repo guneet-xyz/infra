@@ -27,6 +27,10 @@ for chart_dir in "$APPS_DIR"/*/; do
 
   echo "Validating $chart_name..."
 
+  if grep -q 'repository: file://' "$chart_dir/Chart.yaml"; then
+    helm dependency build "$chart_dir" >/dev/null
+  fi
+
   # Build helm template args
   args=("$chart_dir")
   if [[ -f "$SHARED_VALUES" ]]; then

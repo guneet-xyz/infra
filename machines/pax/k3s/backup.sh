@@ -14,7 +14,7 @@ REMOTE_TMP="/tmp/k3s-backups"
 #
 # The namespace is the same as the app name (convention from deploy.sh).
 # ---------------------------------------------------------------------------
-ALL_APPS="caddy walls litellm openwebui infisical registry dev-db"
+ALL_APPS="caddy walls litellm openwebui infisical registry dev-db honcho"
 
 # Returns the PVC names for a given app.
 pvcs_for_app() {
@@ -26,6 +26,7 @@ pvcs_for_app() {
     infisical) echo "infisical-postgres-data" ;;
     registry) echo "registry-data" ;;
     dev-db) echo "dev-db-postgres-data" ;;
+    honcho)   echo "honcho-postgres-data" ;;
     *)        return 1 ;;
   esac
 }

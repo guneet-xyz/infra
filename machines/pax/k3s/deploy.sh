@@ -101,6 +101,10 @@ fi
 # Namespace matches the chart directory name by convention
 NAMESPACE="$CHART"
 
+if grep -q 'repository: file://' "$CHART_DIR/Chart.yaml"; then
+  helm dependency build "$CHART_DIR" >/dev/null
+fi
+
 case "$ACTION" in
   install)
     echo "Installing $CHART into namespace $NAMESPACE..."

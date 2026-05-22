@@ -72,10 +72,19 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: {{ .app.claims.postgresData }}
+            {{- if .app.postgres.initScripts }}
+            - mountPath: /docker-entrypoint-initdb.d
+              name: init-scripts
+            {{- end }}
       volumes:
         - name: {{ .app.claims.postgresData }}
           persistentVolumeClaim:
             claimName: {{ .app.claims.postgresData }}
+        {{- if .app.postgres.initScripts }}
+        - name: init-scripts
+          configMap:
+            name: {{ .app.postgres.initScripts }}
+        {{- end }}
 {{- end -}}
 
 {{- define "postgres.service" -}}
