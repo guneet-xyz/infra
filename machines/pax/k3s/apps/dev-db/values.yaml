@@ -15,9 +15,9 @@ apps:
     postgres:
       serviceName: dev-db-postgres
       port: 5432
-      dbName: devdb
-      dbUser: devdb
-      dbPassword: __DEVDB_POSTGRES_PASSWORD__
+      dbName: dev-db
+      dbUser: postgres
+      dbPassword: postgres
       storage: 5Gi
 
     claims:
