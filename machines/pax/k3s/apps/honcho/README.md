@@ -62,7 +62,12 @@ curl -sf https://honcho.guneet.xyz/health
 - Auth is disabled (`AUTH_USE_AUTH=false`). Access is controlled by
   tailscale network isolation and NetworkPolicies.
 - LLM calls route through the existing litellm instance at
-  `llm.guneet.xyz`.
+  `llm.guneet.xyz`. Honcho reasoning/dialectic/summary/dream workers are
+  pinned to `gpt-5.4`, which is exposed by the cluster LiteLLM config.
+- Automatic message embeddings are disabled (`EMBED_MESSAGES=false`) because
+  LiteLLM currently exposes chat models only. Dialectic tool choice is set to
+  `none` so Honcho does not call semantic search tools that require embeddings.
+  Re-enable both after adding a working embedding model to LiteLLM.
 - The deriver waits for the api to be healthy (initContainer) to avoid
   migration race conditions.
 - Redis uses `emptyDir`, so cache data is lost on pod restart. That's
