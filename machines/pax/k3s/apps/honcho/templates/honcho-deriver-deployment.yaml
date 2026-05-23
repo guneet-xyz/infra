@@ -51,6 +51,13 @@ spec:
               memory: 512Mi
           livenessProbe:
             exec:
-              command: ["sh", "-c", "pgrep -f 'src.deriver' >/dev/null"]
+              command:
+                - /app/.venv/bin/python
+                - -c
+                - |
+                  from pathlib import Path
+                  import sys
+
+                  sys.exit(0 if b"src.deriver" in Path("/proc/1/cmdline").read_bytes() else 1)
             initialDelaySeconds: 30
             periodSeconds: 30
