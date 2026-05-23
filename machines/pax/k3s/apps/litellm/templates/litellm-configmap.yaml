@@ -50,6 +50,22 @@ data:
       model_info:
         supports_vision: True
         base_model: openai/gpt-5.5
+    - model_name: text-embedding-3-large
+      litellm_params:
+        model: openai/text-embedding-3-large
+        api_base: https://models.github.ai/inference
+        api_key: os.environ/GITHUB_MODELS_API_KEY
+      model_info:
+        mode: embedding
+        base_model: openai/text-embedding-3-large
+    - model_name: text-embedding-3-small
+      litellm_params:
+        model: openai/text-embedding-3-large
+        api_base: https://models.github.ai/inference
+        api_key: os.environ/GITHUB_MODELS_API_KEY
+      model_info:
+        mode: embedding
+        base_model: openai/text-embedding-3-large
 
 
     general_settings:
