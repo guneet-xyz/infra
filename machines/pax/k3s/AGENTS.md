@@ -376,6 +376,7 @@ Helm values.
 | `SMTP_USERNAME` | shared (walls, litellm, infisical) |
 | `SMTP_PASSWORD` | shared (walls, litellm, infisical) |
 | `GITHUB_API_KEY` | litellm |
+| `GITHUB_MODELS_API_KEY` | litellm (GitHub Models embeddings) |
 | `LITELLM_MASTER_KEY` | litellm |
 | `LITELLM_POSTGRES_PASSWORD` | litellm (postgres) |
 | `INFISICAL_AUTH_SECRET` | infisical |
