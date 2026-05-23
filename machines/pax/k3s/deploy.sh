@@ -113,6 +113,8 @@ case "$ACTION" in
       -f "$SHARED_VALUES" \
       -f "$CHART_DIR/values.yaml" \
       --rollback-on-failure --wait \
+      ${HELM_FORCE_CONFLICTS:+--force-conflicts} \
+      ${HELM_TAKE_OWNERSHIP:+--take-ownership} \
       --post-renderer obscuro --post-renderer-args inject
     ;;
   upgrade)
@@ -122,6 +124,8 @@ case "$ACTION" in
       -f "$SHARED_VALUES" \
       -f "$CHART_DIR/values.yaml" \
       --rollback-on-failure --wait \
+      ${HELM_FORCE_CONFLICTS:+--force-conflicts} \
+      ${HELM_TAKE_OWNERSHIP:+--take-ownership} \
       --post-renderer obscuro --post-renderer-args inject
     ;;
   uninstall)
