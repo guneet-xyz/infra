@@ -59,3 +59,7 @@ data:
     	redir @root /docs 307
     	reverse_proxy {{ .Values.apps.honcho.appName }}.{{ .Values.apps.honcho.namespace }}.svc.cluster.local:{{ .Values.apps.honcho.port }}
     }
+
+    hermes.guneet.xyz {
+        reverse_proxy http://100.101.181.45:9119
+    }
