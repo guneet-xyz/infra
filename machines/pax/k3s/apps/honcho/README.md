@@ -65,8 +65,9 @@ curl -sf https://honcho.guneet.xyz/health
   `llm.guneet.xyz`. Honcho reasoning/dialectic/summary/dream workers are
   pinned to `gpt-5.4`, which is exposed by the cluster LiteLLM config.
 - Automatic message embeddings are enabled (`EMBED_MESSAGES=true`) and route
-  through LiteLLM. LiteLLM exposes `text-embedding-3-small` as a compatibility
-  alias for the GitHub Models `openai/text-embedding-3-large` backend.
+  through LiteLLM. LiteLLM exposes `text-embedding-3-small` using the GitHub
+  Models `openai/text-embedding-3-large` backend, with Honcho pinned to 1536
+  embedding dimensions to match the existing pgvector schema.
 - The deriver waits for the api to be healthy (initContainer) to avoid
   migration race conditions.
 - Redis uses `emptyDir`, so cache data is lost on pod restart. That's
