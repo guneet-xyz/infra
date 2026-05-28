@@ -4,7 +4,7 @@ Wallpaper sharing platform. Deploys the walls app with its own PostgreSQL databa
 
 ## Install
 
-From the `k3s/` directory:
+From the `clusters/pax/` directory:
 
 ```sh
 ./deploy.sh walls install

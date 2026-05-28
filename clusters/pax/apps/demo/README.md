@@ -9,7 +9,7 @@ with the Tailscale operator exposing SSH as hostname `demo` on the Tailnet.
 
 ## Install
 
-From the `k3s/` directory:
+From the `clusters/pax/` directory:
 
 ```sh
 ./deploy.sh demo install

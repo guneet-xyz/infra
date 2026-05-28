@@ -3,10 +3,10 @@ name: Validate Helm Charts
 on:
   push:
     paths:
-      - "machines/pax/k3s/**"
+      - "clusters/pax/**"
   pull_request:
     paths:
-      - "machines/pax/k3s/**"
+      - "clusters/pax/**"
 
 jobs:
   validate:
@@ -19,11 +19,11 @@ jobs:
 
       - name: Update Helm dependencies
         run: |
-          for chart_dir in machines/pax/k3s/apps/*/; do
+          for chart_dir in clusters/pax/apps/*/; do
             if [ -f "$chart_dir/Chart.yaml" ] && grep -q 'dependencies:' "$chart_dir/Chart.yaml"; then
               helm dependency update "$chart_dir"
             fi
           done
 
       - name: Validate charts
-        run: ./machines/pax/k3s/validate.sh
+        run: ./clusters/pax/validate.sh

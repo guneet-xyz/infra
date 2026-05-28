@@ -1,9 +1,20 @@
-# K3s Infrastructure
+# Pax Cluster
 
-## Repository Structure
+This directory holds the configuration for the `pax` k3s cluster: Helm
+charts, shared values, secrets, and the scripts that deploy and back up
+everything. If you'd ever run a second cluster, you'd add a sibling
+`clusters/<name>/` directory with the same shape.
+
+> **Note:** This tree was moved from `machines/pax/k3s/`. If you previously
+> installed the obscuro helm plugin from the old
+> `machines/pax/k3s/plugins/obscuro` path, run `helm plugin remove obscuro`
+> once; the next `./deploy.sh` will reinstall it from the new path
+> automatically.
+
+## Cluster Structure
 
 ```
-machines/pax/k3s/
+clusters/pax/
 ├── AGENTS.md              # This file
 ├── deploy.sh              # Install/upgrade/uninstall charts
 ├── backup.sh              # Backup and restore PVC data
@@ -22,7 +33,7 @@ machines/pax/k3s/
 ```
 
 Each subdirectory under `apps/` is a Helm chart. Subdirectories under
-`shared/` are library charts that cannot be installed directly — they
+`shared/` are library charts that cannot be installed directly; they
 provide reusable named templates that app charts depend on.
 
 ## Prerequisites
@@ -41,23 +52,23 @@ provide reusable named templates that app charts depend on.
 
 Services must be installed in this order due to dependencies:
 
-1. **caddy** — routes public and private traffic, no app dependencies
-2. **registry** — hosts container images for custom apps
-3. **apps** (walls, headlamp, litellm, openwebui, etc.) — depend on
+1. **caddy**, routes public and private traffic, no app dependencies
+2. **registry**, hosts container images for custom apps
+3. **apps** (walls, headlamp, litellm, openwebui, etc.), depend on
    registry for images and caddy for routing
 
 ## Domain Convention
 
-- `*.guneet.dev` — public services, routed through caddy-public
+- `*.guneet.dev`, public services, routed through caddy-public
   (eth0 / `172.16.0.5`)
-- `*.guneet.xyz` — private services, routed through caddy-private
+- `*.guneet.xyz`, private services, routed through caddy-private
   (tailscale0 / `100.72.80.23`)
 
 This is a best-effort convention, not a strict rule.
 
 ## Validation
 
-Run `./validate.sh` from the `k3s/` directory to validate all charts. It
+Run `./validate.sh` from this directory to validate all charts. It
 renders templates with `helm template`. Run this after any template or
 values changes.
 
@@ -212,7 +223,7 @@ directory.
 ### Health Probes
 
 Every container must have readiness and liveness probes. These are
-required for rolling updates to work correctly — Kubernetes needs to know
+required for rolling updates to work correctly; Kubernetes needs to know
 when a new pod is ready before killing the old one.
 
 For HTTP services:
@@ -253,7 +264,7 @@ resolution, external API calls, and SMTP.
 Standard patterns:
 
 ```yaml
-# Default deny — every chart must have this
+# Default deny, every chart must have this
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -264,7 +275,7 @@ spec:
   policyTypes:
     - Ingress
 ---
-# Allow from Caddy — most app charts need this
+# Allow from Caddy, most app charts need this
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -285,7 +296,7 @@ spec:
         - port: {{ .Values.apps.<name>.port }}
           protocol: TCP
 ---
-# Allow app to reach its Postgres — charts using the postgres library
+# Allow app to reach its Postgres, charts using the postgres library
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -321,9 +332,9 @@ Secret names should be descriptive of their purpose, not prefixed with the
 app name. Since each chart deploys into its own namespace, there is no risk
 of collision. Examples:
 
-- `app-secret` — main app secrets
-- `postgres-secret` — database credentials
-- `cloudflare-secret` — Cloudflare API token
+- `app-secret`, main app secrets
+- `postgres-secret`, database credentials
+- `cloudflare-secret`, Cloudflare API token
 
 ### Obscuro
 
@@ -335,7 +346,7 @@ placeholders in rendered manifests with decrypted values.
 #### Workflow
 
 ```sh
-# First time setup — store password in OS keychain
+# First time setup, store password in OS keychain
 obscuro auth store
 
 # Store a secret
@@ -455,7 +466,7 @@ See each chart's `README.md` for additional details.
 
 Use `backup.sh` to back up and restore PVC data. The script SSHes into
 pax, tars each PVC's host directory, and SCPs the archives to the local
-machine under `backups/<timestamp>/`. During backup and restore, all
+host under `backups/<timestamp>/`. During backup and restore, all
 deployments in the app's namespace are scaled to zero and restored to
 their original replica counts afterward.
 

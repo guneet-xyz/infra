@@ -6,7 +6,7 @@ conversational context for AI agents.
 
 ## Install
 
-From the `k3s/` directory:
+From the `clusters/pax/` directory:
 
 ```sh
 ./deploy.sh honcho install

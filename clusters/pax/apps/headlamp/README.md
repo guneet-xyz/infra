@@ -5,7 +5,7 @@ Kubernetes dashboard. Deployed as an umbrella chart using the official
 
 ## Install
 
-From the `k3s/` directory:
+From the `clusters/pax/` directory:
 
 ```sh
 ./deploy.sh headlamp install
