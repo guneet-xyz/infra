@@ -1,0 +1,89 @@
+apiVersion: kubolt.io/v1
+apps:
+  - name: caddy
+    chartPath: ./apps/caddy
+    namespace: caddy
+    backup:
+      pvcs: [caddy-data]
+      scaleDeployments: true
+
+  - name: registry
+    chartPath: ./apps/registry
+    namespace: registry
+    dependsOn: [caddy]
+    backup:
+      pvcs: [registry-data]
+      scaleDeployments: true
+
+  - name: walls
+    chartPath: ./apps/walls
+    namespace: walls
+    dependsOn: [caddy, registry]
+    backup:
+      pvcs: [walls-postgres-data]
+      scaleDeployments: true
+
+  - name: litellm
+    chartPath: ./apps/litellm
+    namespace: litellm
+    dependsOn: [caddy, registry]
+    backup:
+      pvcs: [litellm-data, litellm-postgres-data]
+      scaleDeployments: true
+
+  - name: openwebui
+    chartPath: ./apps/openwebui
+    namespace: openwebui
+    dependsOn: [caddy, registry]
+    backup:
+      pvcs: [openwebui-data]
+      scaleDeployments: true
+
+  - name: infisical
+    chartPath: ./apps/infisical
+    namespace: infisical
+    dependsOn: [caddy, registry]
+    backup:
+      pvcs: [infisical-postgres-data]
+      scaleDeployments: true
+
+  - name: dev-db
+    chartPath: ./apps/dev-db
+    namespace: dev-db
+    dependsOn: [caddy, registry]
+    backup:
+      pvcs: [dev-db-postgres-data]
+      scaleDeployments: true
+
+  - name: honcho
+    chartPath: ./apps/honcho
+    namespace: honcho
+    dependsOn: [caddy, registry]
+    backup:
+      pvcs: [honcho-postgres-data]
+      scaleDeployments: true
+
+  - name: headlamp
+    chartPath: ./apps/headlamp
+    namespace: headlamp
+    dependsOn: [caddy, registry]
+
+  - name: homepage
+    chartPath: ./apps/homepage
+    namespace: homepage
+    dependsOn: [caddy, registry]
+
+  - name: portainer
+    chartPath: ./apps/portainer
+    namespace: portainer
+    dependsOn: [caddy, registry]
+
+  - name: demo
+    chartPath: ./apps/demo
+    namespace: demo
+    dependsOn: [caddy, registry]
+
+  - name: tailscale
+    chartPath: ./apps/tailscale
+    namespace: tailscale
+    dependsOn: [caddy, registry]

@@ -36,6 +36,29 @@ Each subdirectory under `apps/` is a Helm chart. Subdirectories under
 `shared/` are library charts that cannot be installed directly; they
 provide reusable named templates that app charts depend on.
 
+## Using kubolt
+
+`kubolt` is a Go CLI that replaces the shell scripts for day-to-day cluster
+management. It wraps Helm with the same secrets, dependency, and validation
+logic the scripts use, but exposes them as proper subcommands.
+
+Install:
+
+```
+curl -sSL https://raw.githubusercontent.com/guneet-xyz/kubolt/main/install.sh | sh
+```
+
+Common commands (run from this directory):
+
+- `kubolt validate`, template all charts
+- `kubolt list`, show install status for every chart
+- `kubolt install <app>`, install or upgrade an app and its dependencies
+- `kubolt uninstall <app>`, uninstall an app (blocks if dependents are still installed)
+- `kubolt backup --dir ./backups <app>`, back up an app's PVCs
+
+The original `deploy.sh`, `backup.sh`, and `validate.sh` scripts remain in
+this directory as a fallback.
+
 ## Prerequisites
 
 - `helm` installed

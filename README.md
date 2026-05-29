@@ -31,6 +31,8 @@ See [`clusters/pax/AGENTS.md`](clusters/pax/AGENTS.md) for deploy, backup, and o
 
 k3s + Helm + [obscuro](https://github.com/janklabs/obscuro) for secrets.
 
+- [kubolt](https://github.com/guneet-xyz/kubolt), Go CLI that wraps Helm for day-to-day cluster management (install, uninstall, validate, list, backup). Install with `curl -sSL https://raw.githubusercontent.com/guneet-xyz/kubolt/main/install.sh | sh`. The `deploy.sh`/`backup.sh`/`validate.sh` scripts remain as a fallback.
+
 ## Helm plugin caveat
 
 If you previously installed the obscuro helm plugin from the old path, run `helm plugin remove obscuro` once before your next deploy; `deploy.sh` will reinstall it automatically.
