@@ -52,7 +52,7 @@ Common commands (run from this directory):
 
 - `kubolt validate`, template all charts
 - `kubolt list`, show install status for every chart
-- `kubolt install <app>`, install or upgrade an app and its dependencies
+- `kubolt install [app]`, install or upgrade an app (and its dependencies), or every app in the manifest when no arg is given
 - `kubolt uninstall <app>`, uninstall an app (blocks if dependents are still installed)
 - `kubolt backup --dir ./backups <app>`, back up an app's PVCs
 
