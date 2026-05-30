@@ -70,6 +70,29 @@ apps:
     authPort: 5001
     secrets:
       htpasswd: registry-public-auth-htpasswd
+  plane:
+    appName: plane
+    namespace: plane
+    domain: plane.guneet.xyz
+    services:
+      web:
+        name: plane-web
+        port: 3000
+      space:
+        name: plane-space
+        port: 3000
+      admin:
+        name: plane-admin
+        port: 3000
+      api:
+        name: plane-api
+        port: 8000
+      live:
+        name: plane-live
+        port: 3000
+      minio:
+        name: plane-minio
+        port: 9000
 
 smtp:
   host: smtp.azurecomm.net

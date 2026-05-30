@@ -115,3 +115,15 @@ apps:
         - type: filesystem
           pvc: registry-public-data
       scaleDeployments: true
+
+  - name: plane
+    chartPath: ./apps/plane
+    namespace: plane
+    dependsOn: [caddy, registry]
+    backup:
+      targets:
+        - type: pg_dump
+          podSelector: app.name=plane-plane-pgdb
+        - type: filesystem
+          pvc: pvc-plane-minio-vol-plane-minio-wl-0
+      scaleDeployments: true

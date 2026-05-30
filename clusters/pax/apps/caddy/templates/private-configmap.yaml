@@ -63,3 +63,28 @@ data:
     hermes.guneet.xyz {
         reverse_proxy http://100.101.181.45:9119
     }
+
+    plane.guneet.xyz {
+    	@api path /api/* /auth/*
+    	reverse_proxy @api {{ .Values.apps.plane.services.api.name }}.{{ .Values.apps.plane.namespace }}.svc.cluster.local:{{ .Values.apps.plane.services.api.port }}
+
+    	@spaces path /spaces /spaces/*
+    	reverse_proxy @spaces {{ .Values.apps.plane.services.space.name }}.{{ .Values.apps.plane.namespace }}.svc.cluster.local:{{ .Values.apps.plane.services.space.port }}
+
+    	@godmode path /god-mode /god-mode/*
+    	reverse_proxy @godmode {{ .Values.apps.plane.services.admin.name }}.{{ .Values.apps.plane.namespace }}.svc.cluster.local:{{ .Values.apps.plane.services.admin.port }}
+
+    	@live path /live /live/*
+    	reverse_proxy @live {{ .Values.apps.plane.services.live.name }}.{{ .Values.apps.plane.namespace }}.svc.cluster.local:{{ .Values.apps.plane.services.live.port }} {
+    		flush_interval -1
+    	}
+
+    	@uploads path /uploads /uploads/*
+    	reverse_proxy @uploads {{ .Values.apps.plane.services.minio.name }}.{{ .Values.apps.plane.namespace }}.svc.cluster.local:{{ .Values.apps.plane.services.minio.port }}
+
+    	reverse_proxy {{ .Values.apps.plane.services.web.name }}.{{ .Values.apps.plane.namespace }}.svc.cluster.local:{{ .Values.apps.plane.services.web.port }}
+
+    	request_body {
+    		max_size 100MB
+    	}
+    }

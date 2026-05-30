@@ -1,0 +1,7 @@
+apiVersion: v2
+name: plane
+version: 0.1.0
+dependencies:
+  - name: plane-ce
+    version: 1.5.1
+    repository: "https://helm.plane.so/"
