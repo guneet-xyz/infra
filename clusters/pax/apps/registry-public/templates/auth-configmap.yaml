@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.apps.registryPublic.configMaps.authConfig }}
+  namespace: {{ .Values.apps.registryPublic.namespace }}
+  labels:
+    app: {{ .Values.apps.registryPublic.authAppName }}
+data:
+  # cesanta/docker_auth v1 configuration.
+  #
+  # Goals:
+  #   * Anonymous (no Authorization header) → token with `pull` on every repo.
+  #   * Authenticated users (Basic auth) → token with full access (push, pull, *).
+  #
+  # cesanta/docker_auth does NOT support a top-level `htpasswd:` block; user
+  # credentials must live inline in the `users:` map. Bcrypt hashes are injected
+  # from obscuro at deploy time so this configmap never holds raw secrets in git.
+  auth_config.yml: |
+    server:
+      addr: ":{{ .Values.apps.registryPublic.authPort }}"
+
+    token:
+      issuer: "{{ .Values.apps.registryPublic.domain }}"
+      expiration: 900
+      certificate: "/certs/tls.crt"
+      key: "/certs/tls.key"
+
+    users:
+      "admin":
+        password: "__REGISTRY_PUBLIC_ADMIN_HASH__"
+      "ci":
+        password: "__REGISTRY_PUBLIC_CI_HASH__"
+      "": {}
+
+    acl:
+      - match: {account: ""}
+        actions: ["pull"]
+        comment: "Anonymous pull"
+      - match: {account: "/.+/"}
+        actions: ["*"]
+        comment: "Authenticated users can pull and push"

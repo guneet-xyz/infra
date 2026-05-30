@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.apps.registryPublic.appName }}-gc
+  namespace: {{ .Values.apps.registryPublic.namespace }}
+  labels:
+    app: {{ .Values.apps.registryPublic.appName }}
+spec:
+  schedule: {{ .Values.apps.registryPublic.gc.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            role: primary
+          restartPolicy: OnFailure
+          containers:
+            - name: gc
+              image: {{ .Values.apps.registryPublic.images.registry.image }}:{{ .Values.apps.registryPublic.images.registry.imageTag }}
+              imagePullPolicy: IfNotPresent
+              securityContext:
+                allowPrivilegeEscalation: false
+              command:
+                - /bin/registry
+                - garbage-collect
+                - /etc/docker/registry/config.yml
+              volumeMounts:
+                - mountPath: /var/lib/registry
+                  name: registry-data
+                - mountPath: /etc/docker/registry/config.yml
+                  name: registry-config
+                  subPath: config.yml
+                  readOnly: true
+          volumes:
+            - name: registry-data
+              persistentVolumeClaim:
+                claimName: {{ .Values.apps.registryPublic.claims.data }}
+            - name: registry-config
+              configMap:
+                name: {{ .Values.apps.registryPublic.configMaps.registryConfig }}

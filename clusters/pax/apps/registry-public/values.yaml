@@ -1,0 +1,28 @@
+apps:
+  registryPublic:
+    images:
+      registry:
+        image: registry
+        imageTag: "3"
+      auth:
+        image: cesanta/docker_auth
+        imageTag: "1"
+
+    replicas: 1
+
+    domain: cr.guneet.dev
+
+    storage: 10Gi
+
+    claims:
+      data: registry-public-data
+
+    configMaps:
+      registryConfig: registry-public-config
+      authConfig: registry-public-auth-config
+
+    secrets:
+      authSigning: registry-public-auth-signing
+
+    gc:
+      schedule: "0 4 * * 0"

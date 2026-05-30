@@ -62,6 +62,14 @@ apps:
     appName: registry-ui
     namespace: registry
     port: 3000
+  registryPublic:
+    appName: registry-public
+    namespace: registry-public
+    port: 5000
+    authAppName: registry-public-auth
+    authPort: 5001
+    secrets:
+      htpasswd: registry-public-auth-htpasswd
 
 smtp:
   host: smtp.azurecomm.net

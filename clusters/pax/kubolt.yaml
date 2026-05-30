@@ -105,3 +105,13 @@ apps:
     chartPath: ./apps/tailscale
     namespace: tailscale
     dependsOn: [caddy, registry]
+
+  - name: registry-public
+    chartPath: ./apps/registry-public
+    namespace: registry-public
+    dependsOn: [caddy]
+    backup:
+      targets:
+        - type: filesystem
+          pvc: registry-public-data
+      scaleDeployments: true

@@ -35,6 +35,22 @@ data:
     	reverse_proxy {{ .Values.apps.demo.appName }}.{{ .Values.apps.demo.namespace }}.svc.cluster.local:{{ .Values.apps.demo.port }}
     }
 
+    cr.guneet.dev {
+    	reverse_proxy /auth* {{ .Values.apps.registryPublic.authAppName }}.{{ .Values.apps.registryPublic.namespace }}.svc.cluster.local:{{ .Values.apps.registryPublic.authPort }}
+
+    	reverse_proxy /v2/* {{ .Values.apps.registryPublic.appName }}.{{ .Values.apps.registryPublic.namespace }}.svc.cluster.local:{{ .Values.apps.registryPublic.port }} {
+    		flush_interval -1
+    		transport http {
+    			read_timeout 10m
+    			write_timeout 10m
+    		}
+    	}
+
+    	request_body {
+    		max_size 0
+    	}
+    }
+
     books.guneet.dev {
     	reverse_proxy https://books.guneet.xyz {
     		header_up Host {upstream_hostport}
