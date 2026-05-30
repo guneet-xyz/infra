@@ -1,24 +1,22 @@
 # Pax Cluster
 
 This directory holds the configuration for the `pax` k3s cluster: Helm
-charts, shared values, secrets, and the scripts that deploy and back up
+charts, shared values, secrets, and the kubolt manifest that deploys and backs up
 everything. If you'd ever run a second cluster, you'd add a sibling
 `clusters/<name>/` directory with the same shape.
 
 > **Note:** This tree was moved from `machines/pax/k3s/`. If you previously
 > installed the obscuro helm plugin from the old
 > `machines/pax/k3s/plugins/obscuro` path, run `helm plugin remove obscuro`
-> once; the next `./deploy.sh` will reinstall it from the new path
-> automatically.
+> once before your next kubolt operation so Helm can use the current plugin
+> path.
 
 ## Cluster Structure
 
 ```
 clusters/pax/
 ├── AGENTS.md              # This file
-├── deploy.sh              # Install/upgrade/uninstall charts
-├── backup.sh              # Backup and restore PVC data
-├── validate.sh            # Validates all chart templates
+├── kubolt.yaml            # App, dependency, namespace, and backup manifest
 ├── .gitignore             # Ignores backups/ directory
 ├── .obscuro/              # Encrypted secrets (safe to commit)
 ├── values-shared.yaml     # Cross-app references and shared config
@@ -38,9 +36,9 @@ provide reusable named templates that app charts depend on.
 
 ## Using kubolt
 
-`kubolt` is a Go CLI that replaces the shell scripts for day-to-day cluster
-management. It wraps Helm with the same secrets, dependency, and validation
-logic the scripts use, but exposes them as proper subcommands.
+`kubolt` is the Go CLI for day-to-day cluster management. It wraps Helm with
+the repo's secrets, dependency, backup, and validation logic as proper
+subcommands.
 
 Install:
 
@@ -55,9 +53,6 @@ Common commands (run from this directory):
 - `kubolt install [app]`, install or upgrade an app (and its dependencies), or every app in the manifest when no arg is given
 - `kubolt uninstall <app>`, uninstall an app (blocks if dependents are still installed)
 - `kubolt backup --dir ./backups <app>`, back up an app's PVCs
-
-The original `deploy.sh`, `backup.sh`, and `validate.sh` scripts remain in
-this directory as a fallback.
 
 ## Prerequisites
 
@@ -91,9 +86,8 @@ This is a best-effort convention, not a strict rule.
 
 ## Validation
 
-Run `./validate.sh` from this directory to validate all charts. It
-renders templates with `helm template`. Run this after any template or
-values changes.
+Run `kubolt validate` from this directory to validate all charts. It renders
+templates with Helm. Run this after any template or values changes.
 
 ## Chart Conventions
 
@@ -135,8 +129,8 @@ apps:
 Helm merges both files (`-f values-shared.yaml -f values.yaml`), so
 templates access all fields under `.Values.apps.<camelCaseName>`.
 
-The namespace must match the chart directory name. `deploy.sh` uses the
-chart directory name as the Helm release namespace.
+The namespace must match the chart directory name and the app entry in
+`kubolt.yaml`.
 
 ### Naming
 
@@ -196,7 +190,7 @@ metadata:
   namespace: {{ .Values.apps.<name>.namespace }}
 ```
 
-Namespaces are created automatically by `deploy.sh` via Helm's
+Namespaces are created automatically by `kubolt install` via Helm's
 `--create-namespace` flag. Do not include a `namespace.yaml` template in
 charts.
 
@@ -379,7 +373,7 @@ obscuro set SECRET_KEY
 obscuro list
 
 # Deploy with post-renderer (password retrieved from keychain automatically)
-./deploy.sh <chart> install
+kubolt install <chart>
 ```
 
 Obscuro resolves the password in this order:
@@ -470,46 +464,41 @@ SMTP credentials (`SMTP_USERNAME`, `SMTP_PASSWORD`) are Obscuro secrets.
 
 ## Installing a Chart
 
-Use `deploy.sh` to install, upgrade, or uninstall charts. It automatically
-reads the namespace from the chart's `values.yaml` and passes the correct
-flags to Helm.
+Use `kubolt` to install, upgrade, or uninstall charts. It reads app metadata
+from `kubolt.yaml`, installs dependencies first, and passes the correct flags
+to Helm.
 
 ```sh
-./deploy.sh <chart> install
-./deploy.sh <chart> upgrade
-./deploy.sh <chart> uninstall
+kubolt install <chart>
+kubolt uninstall <chart>
 ```
 
-The script handles `-n <namespace> --create-namespace`, merging
+Kubolt handles `-n <namespace> --create-namespace`, merging
 `values-shared.yaml`, and the Obscuro post-renderer.
 
 See each chart's `README.md` for additional details.
 
 ## Backups
 
-Use `backup.sh` to back up and restore PVC data. The script SSHes into
-pax, tars each PVC's host directory, and SCPs the archives to the local
-host under `backups/<timestamp>/`. During backup and restore, all
-deployments in the app's namespace are scaled to zero and restored to
-their original replica counts afterward.
+Use `kubolt backup` to back up PVC data. Backup targets live in
+`kubolt.yaml`. During backup, kubolt can scale deployments in the app's
+namespace to zero and restore their original replica counts afterward when
+`scaleDeployments: true` is set.
 
 ```sh
-./backup.sh backup                            # all apps
-./backup.sh backup walls                      # specific app
-./backup.sh restore walls                     # restore from latest backup
-./backup.sh restore litellm -- 2026-04-24_143000  # restore specific timestamp
+kubolt backup --dir ./backups walls
 ```
 
 ### Adding a New App to Backups
 
-Edit `backup.sh` and add the app's PVCs to the `pvcs_for_app` function
-and `ALL_APPS` list.
+Edit `kubolt.yaml` and add backup targets under the app's `backup.targets`
+list.
 
 ### Restore After Data Loss
 
-If PVCs were deleted (e.g., after `helm uninstall`), reinstall the chart
-first with `deploy.sh <chart> install` to recreate the PVCs, then run
-`backup.sh restore <app>`. The script resolves PVC host paths dynamically.
+If PVCs were deleted (e.g., after `kubolt uninstall`), reinstall the chart
+first with `kubolt install <chart>` to recreate the PVCs, then restore the
+data from the backup archive using the matching PVC path.
 
 ## Shared Library Charts
 
