@@ -9,19 +9,19 @@ conversational context for AI agents.
 From the `clusters/pax/` directory:
 
 ```sh
-./deploy.sh honcho install
+kubolt install honcho
 ```
 
 ## Upgrade
 
 ```sh
-./deploy.sh honcho upgrade
+kubolt install honcho
 ```
 
 ## Uninstall
 
 ```sh
-./deploy.sh honcho uninstall
+kubolt uninstall honcho
 ```
 
 ## Access
@@ -53,8 +53,7 @@ curl -sf https://honcho.guneet.xyz/health
 ## Backup
 
 ```sh
-./backup.sh backup honcho
-./backup.sh restore honcho
+kubolt backup --dir ./backups honcho
 ```
 
 ## Notes

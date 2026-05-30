@@ -12,19 +12,19 @@ with the Tailscale operator exposing SSH as hostname `demo` on the Tailnet.
 From the `clusters/pax/` directory:
 
 ```sh
-./deploy.sh demo install
+kubolt install demo
 ```
 
 ## Upgrade
 
 ```sh
-./deploy.sh demo upgrade
+kubolt install demo
 ```
 
 ## Uninstall
 
 ```sh
-./deploy.sh demo uninstall
+kubolt uninstall demo
 ```
 
 ## Usage

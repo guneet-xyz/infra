@@ -8,19 +8,19 @@ Kubernetes dashboard. Deployed as an umbrella chart using the official
 From the `clusters/pax/` directory:
 
 ```sh
-./deploy.sh headlamp install
+kubolt install headlamp
 ```
 
 ## Upgrade
 
 ```sh
-./deploy.sh headlamp upgrade
+kubolt install headlamp
 ```
 
 ## Uninstall
 
 ```sh
-./deploy.sh headlamp uninstall
+kubolt uninstall headlamp
 ```
 
 ## Get Login Token

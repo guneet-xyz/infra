@@ -7,19 +7,19 @@ Wallpaper sharing platform. Deploys the walls app with its own PostgreSQL databa
 From the `clusters/pax/` directory:
 
 ```sh
-./deploy.sh walls install
+kubolt install walls
 ```
 
 ## Upgrade
 
 ```sh
-./deploy.sh walls upgrade
+kubolt install walls
 ```
 
 ## Uninstall
 
 ```sh
-./deploy.sh walls uninstall
+kubolt uninstall walls
 ```
 
 ## Access

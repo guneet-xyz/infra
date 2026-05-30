@@ -7,19 +7,19 @@ Development PostgreSQL database + pgui web UI. Used as a scratch database for ex
 From the `clusters/pax/` directory:
 
 ```sh
-./deploy.sh dev-db install
+kubolt install dev-db
 ```
 
 ## Upgrade
 
 ```sh
-./deploy.sh dev-db upgrade
+kubolt install dev-db
 ```
 
 ## Uninstall
 
 ```sh
-./deploy.sh dev-db uninstall
+kubolt uninstall dev-db
 ```
 
 ## Access
@@ -48,18 +48,17 @@ To rotate:
 
 ```sh
 obscuro set DEVDB_POSTGRES_PASSWORD
-./deploy.sh dev-db upgrade
+kubolt install dev-db
 ```
 
 The `checksum/secret` annotation on the pgui Deployment ensures the pod restarts on password rotation.
 
 ## Backups
 
-PVC `dev-db-postgres-data` is included in `backup.sh`:
+PVC `dev-db-postgres-data` is included in `kubolt.yaml`:
 
 ```sh
-./backup.sh backup dev-db
-./backup.sh restore dev-db
+kubolt backup --dir ./backups dev-db
 ```
 
 See the top-level `AGENTS.md` for the full backup workflow.

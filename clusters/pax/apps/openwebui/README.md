@@ -8,19 +8,19 @@ proxy as its backend.
 From the `clusters/pax/` directory:
 
 ```sh
-./deploy.sh openwebui install
+kubolt install openwebui
 ```
 
 ## Upgrade
 
 ```sh
-./deploy.sh openwebui upgrade
+kubolt install openwebui
 ```
 
 ## Uninstall
 
 ```sh
-./deploy.sh openwebui uninstall
+kubolt uninstall openwebui
 ```
 
 ## Access

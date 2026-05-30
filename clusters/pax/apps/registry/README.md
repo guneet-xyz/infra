@@ -20,10 +20,14 @@ Before installing, store these secrets with `obscuro set`:
 ## Install
 
 ```sh
-./deploy.sh registry install
+kubolt install registry
 ```
 
 ## Backup
 
-Add `registry` to `backup.sh` (`ALL_APPS` and `pvcs_for_app`) to enable
-PVC backups for `registry-data`.
+`registry` has a backup target in `kubolt.yaml` for PVC backups of
+`registry-data`:
+
+```sh
+kubolt backup --dir ./backups registry
+```

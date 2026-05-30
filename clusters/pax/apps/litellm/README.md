@@ -9,19 +9,19 @@ own PostgreSQL database.
 From the `clusters/pax/` directory:
 
 ```sh
-./deploy.sh litellm install
+kubolt install litellm
 ```
 
 ## Upgrade
 
 ```sh
-./deploy.sh litellm upgrade
+kubolt install litellm
 ```
 
 ## Uninstall
 
 ```sh
-./deploy.sh litellm uninstall
+kubolt uninstall litellm
 ```
 
 ## Access

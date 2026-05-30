@@ -9,25 +9,25 @@ Dashboard for all services on pax, powered by
 From the `clusters/pax/` directory:
 
 ```sh
-./deploy.sh homepage install
+kubolt install homepage
 ```
 
 ## Upgrade
 
 ```sh
-./deploy.sh homepage upgrade
+kubolt install homepage
 ```
 
 ## Uninstall
 
 ```sh
-./deploy.sh homepage uninstall
+kubolt uninstall homepage
 ```
 
 ## Configuration
 
 All Homepage config is in `templates/configmap.yaml`. Edit the services,
-bookmarks, widgets, and settings inline, then run `./deploy.sh homepage upgrade`.
+bookmarks, widgets, and settings inline, then run `kubolt install homepage`.
 
 See [Homepage docs](https://gethomepage.dev/configs/) for config reference.
 

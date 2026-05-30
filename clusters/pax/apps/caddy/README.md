@@ -13,19 +13,19 @@ TLS certificate cache.
 From the `clusters/pax/` directory:
 
 ```sh
-./deploy.sh caddy install
+kubolt install caddy
 ```
 
 ## Upgrade
 
 ```sh
-./deploy.sh caddy upgrade
+kubolt install caddy
 ```
 
 ## Uninstall
 
 ```sh
-./deploy.sh caddy uninstall
+kubolt uninstall caddy
 ```
 
 ## Routes
@@ -53,7 +53,7 @@ If upgrading from the old `caddy-public` chart:
 ```sh
 helm uninstall caddy-public -n caddy-public
 kubectl delete namespace caddy-public
-./deploy.sh caddy install
+kubolt install caddy
 ```
 
 ## Obscuro Secrets
