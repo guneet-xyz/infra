@@ -1,0 +1,81 @@
+# Default deny all ingress to the synapse namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: {{ .Values.apps.synapse.namespace }}
+  labels:
+    app: {{ .Values.apps.synapse.appName }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+# Allow Caddy to reach Synapse
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-caddy-synapse
+  namespace: {{ .Values.apps.synapse.namespace }}
+  labels:
+    app: {{ .Values.apps.synapse.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.synapse.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.apps.caddy.namespace }}
+      ports:
+        - port: {{ .Values.apps.synapse.port }}
+          protocol: TCP
+---
+# Allow Caddy to reach Element web
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-caddy-element
+  namespace: {{ .Values.apps.element.namespace }}
+  labels:
+    app: {{ .Values.apps.element.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.element.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.apps.caddy.namespace }}
+      ports:
+        - port: 80
+          protocol: TCP
+---
+# Allow Synapse to reach its Postgres
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres
+  namespace: {{ .Values.apps.synapse.namespace }}
+  labels:
+    app: {{ .Values.apps.synapse.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.synapse.postgres.serviceName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ .Values.apps.synapse.appName }}
+      ports:
+        - port: {{ .Values.apps.synapse.postgres.port }}
+          protocol: TCP

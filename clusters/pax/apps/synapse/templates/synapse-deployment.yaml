@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.synapse.appName }}
+  namespace: {{ .Values.apps.synapse.namespace }}
+  labels:
+    app: {{ .Values.apps.synapse.appName }}
+spec:
+  replicas: {{ .Values.apps.synapse.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.synapse.appName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.synapse.appName }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/synapse-configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/synapse-secret.yaml") . | sha256sum }}
+        checksum/signing: {{ include (print $.Template.BasePath "/signing-key-secret.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      securityContext:
+        fsGroup: 991
+      containers:
+        - name: synapse
+          image: {{ .Values.apps.synapse.images.synapse.image }}:{{ .Values.apps.synapse.images.synapse.imageTag }}
+          args: ["run"]
+          env:
+            - name: SYNAPSE_CONFIG_PATH
+              value: /config/homeserver.yaml
+          envFrom:
+            - secretRef:
+                name: app-secret
+          ports:
+            - containerPort: {{ .Values.apps.synapse.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: media
+              mountPath: /media
+            - name: config
+              mountPath: /config
+            - name: signing-key
+              mountPath: /secrets
+              readOnly: true
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              memory: 1536Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.apps.synapse.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.apps.synapse.port }}
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.synapse.claims.dataStore }}
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.synapse.claims.mediaStore }}
+        - name: config
+          projected:
+            sources:
+              - configMap:
+                  name: {{ .Values.apps.synapse.configMaps.homeserver }}
+                  items:
+                    - key: homeserver.yaml
+                      path: homeserver.yaml
+              - configMap:
+                  name: {{ .Values.apps.synapse.configMaps.logConfig }}
+                  items:
+                    - key: log.config
+                      path: log.config
+        - name: signing-key
+          secret:
+            secretName: synapse-signing-key
+            items:
+              - key: signing.key
+                path: signing.key
+                mode: 0400

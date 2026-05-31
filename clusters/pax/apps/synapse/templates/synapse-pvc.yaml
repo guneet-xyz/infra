@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.apps.synapse.claims.dataStore }}
+  namespace: {{ .Values.apps.synapse.namespace }}
+  labels:
+    app: {{ .Values.apps.synapse.appName }}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: {{ .Values.apps.synapse.dataStoreSize }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.apps.synapse.claims.mediaStore }}
+  namespace: {{ .Values.apps.synapse.namespace }}
+  labels:
+    app: {{ .Values.apps.synapse.appName }}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: {{ .Values.apps.synapse.mediaStoreSize }}

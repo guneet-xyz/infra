@@ -1,0 +1,41 @@
+apps:
+  synapse:
+    images:
+      synapse:
+        image: ghcr.io/element-hq/synapse
+        imageTag: "v1.124.0"
+      postgres:
+        image: postgres
+        imageTag: "16.6-alpine"
+
+    replicas: 1
+
+    reportStats: false
+    mediaStoreSize: 10Gi
+    dataStoreSize: 1Gi
+
+    postgres:
+      serviceName: synapse-postgres
+      port: 5432
+      dbName: synapse
+      dbUser: synapse
+      dbPassword: __SYNAPSE_POSTGRES_PASSWORD__
+      storage: 5Gi
+
+    claims:
+      postgresData: synapse-postgres-data
+      mediaStore: synapse-media
+      dataStore: synapse-data
+
+    configMaps:
+      homeserver: synapse-homeserver-config
+      logConfig: synapse-log-config
+
+  element:
+    images:
+      element:
+        image: vectorim/element-web
+        imageTag: "v1.11.86"
+    replicas: 1
+    configMaps:
+      config: element-config

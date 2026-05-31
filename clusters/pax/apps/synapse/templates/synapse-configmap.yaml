@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.apps.synapse.configMaps.homeserver }}
+  namespace: {{ .Values.apps.synapse.namespace }}
+  labels:
+    app: {{ .Values.apps.synapse.appName }}
+data:
+  homeserver.yaml: |
+    server_name: "{{ .Values.apps.synapse.domain }}"
+    pid_file: /data/homeserver.pid
+    public_baseurl: "https://{{ .Values.apps.synapse.domain }}/"
+    web_client_location: "https://{{ .Values.apps.element.domain }}/"
+    signing_key_path: "/secrets/signing.key"
+
+    listeners:
+      - port: {{ .Values.apps.synapse.port }}
+        tls: false
+        type: http
+        x_forwarded: true
+        bind_addresses: ['0.0.0.0']
+        resources:
+          - names: [client, federation]
+            compress: false
+
+    database:
+      name: psycopg2
+      args:
+        user: {{ .Values.apps.synapse.postgres.dbUser }}
+        password: ${SYNAPSE_DB_PASSWORD}
+        database: {{ .Values.apps.synapse.postgres.dbName }}
+        host: {{ .Values.apps.synapse.postgres.serviceName }}
+        port: {{ .Values.apps.synapse.postgres.port }}
+        cp_min: 5
+        cp_max: 10
+
+    media_store_path: /media
+    max_upload_size: "100M"
+    url_preview_enabled: false
+
+    log_config: "/config/log.config"
+
+    registration_shared_secret: ${SYNAPSE_REGISTRATION_SHARED_SECRET}
+    macaroon_secret_key: ${SYNAPSE_MACAROON_SECRET_KEY}
+    form_secret: ${SYNAPSE_FORM_SECRET}
+
+    enable_registration: true
+    registration_requires_token: true
+    enable_registration_without_verification: false
+
+    report_stats: {{ .Values.apps.synapse.reportStats }}
+
+    federation_domain_whitelist: null
+    allow_public_rooms_over_federation: true
+
+    trusted_key_servers:
+      - server_name: "matrix.org"
+
+    suppress_key_server_warning: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.apps.synapse.configMaps.logConfig }}
+  namespace: {{ .Values.apps.synapse.namespace }}
+  labels:
+    app: {{ .Values.apps.synapse.appName }}
+data:
+  log.config: |
+    version: 1
+    formatters:
+      precise:
+        format: '%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(request)s - %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: precise
+    loggers:
+      synapse.storage.SQL:
+        level: INFO
+    root:
+      level: INFO
+      handlers: [console]
+    disable_existing_loggers: false

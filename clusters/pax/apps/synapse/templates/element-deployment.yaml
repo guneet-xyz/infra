@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.element.appName }}
+  namespace: {{ .Values.apps.element.namespace }}
+  labels:
+    app: {{ .Values.apps.element.appName }}
+spec:
+  replicas: {{ .Values.apps.element.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.element.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.element.appName }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/element-configmap.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: element
+          image: {{ .Values.apps.element.images.element.image }}:{{ .Values.apps.element.images.element.imageTag }}
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /app/config.json
+              subPath: config.json
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+          readinessProbe:
+            httpGet:
+              path: /config.json
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /config.json
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Values.apps.element.configMaps.config }}
