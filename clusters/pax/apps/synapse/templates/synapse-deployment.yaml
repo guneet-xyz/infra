@@ -25,6 +25,43 @@ spec:
         role: primary
       securityContext:
         fsGroup: 991
+      initContainers:
+        - name: config-subst
+          image: alpine:3.20
+          command:
+            - sh
+            - -c
+            - |
+              apk add --no-cache gettext > /dev/null 2>&1
+              envsubst < /config-source/homeserver.yaml > /config-processed/homeserver.yaml
+              cp /config-source/log.config /config-processed/log.config
+          env:
+            - name: SYNAPSE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: SYNAPSE_REGISTRATION_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SYNAPSE_REGISTRATION_SHARED_SECRET
+            - name: SYNAPSE_MACAROON_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SYNAPSE_MACAROON_SECRET_KEY
+            - name: SYNAPSE_FORM_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SYNAPSE_FORM_SECRET
+          volumeMounts:
+            - name: config-source
+              mountPath: /config-source
+              readOnly: true
+            - name: config
+              mountPath: /config-processed
       containers:
         - name: synapse
           image: {{ .Values.apps.synapse.images.synapse.image }}:{{ .Values.apps.synapse.images.synapse.imageTag }}
@@ -77,6 +114,8 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.apps.synapse.claims.mediaStore }}
         - name: config
+          emptyDir: {}
+        - name: config-source
           projected:
             sources:
               - configMap:
