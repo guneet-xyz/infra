@@ -64,6 +64,10 @@ data:
         reverse_proxy http://100.101.181.45:9119
     }
 
+    chat.hermes.guneet.xyz {
+        reverse_proxy http://100.101.181.45:8787
+    }
+
     plane.guneet.xyz {
     	@api path /api/* /auth/*
     	reverse_proxy @api {{ .Values.apps.plane.services.api.name }}.{{ .Values.apps.plane.namespace }}.svc.cluster.local:{{ .Values.apps.plane.services.api.port }}
