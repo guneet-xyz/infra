@@ -93,6 +93,16 @@ apps:
       minio:
         name: plane-minio
         port: 9000
+  synapse:
+    appName: synapse
+    namespace: synapse
+    port: 8008
+    domain: matrix.guneet.dev
+  element:
+    appName: element
+    namespace: synapse
+    port: 80
+    domain: chat.guneet.dev
 
 smtp:
   host: smtp.azurecomm.net
