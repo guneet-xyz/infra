@@ -81,6 +81,20 @@ apps:
           podSelector: app=honcho-postgres
       scaleDeployments: true
 
+  - name: synapse
+    chartPath: ./apps/synapse
+    namespace: synapse
+    dependsOn: [caddy, registry]
+    backup:
+      targets:
+        - type: pg_dump
+          podSelector: app=synapse-postgres
+        - type: filesystem
+          pvc: synapse-media
+        - type: filesystem
+          pvc: synapse-data
+      scaleDeployments: true
+
   - name: headlamp
     chartPath: ./apps/headlamp
     namespace: headlamp

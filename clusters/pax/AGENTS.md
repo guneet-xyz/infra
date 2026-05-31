@@ -418,6 +418,11 @@ Helm values.
 | `TS_CLIENT_ID` | tailscale |
 | `TS_CLIENT_SECRET` | tailscale |
 | `DEMO_SSH_AUTHORIZED_KEYS` | demo (SSH public keys, one per line) |
+| `SYNAPSE_SIGNING_KEY` | synapse (federation signing key; IMMUTABLE — never regenerate) |
+| `SYNAPSE_POSTGRES_PASSWORD` | synapse (postgres) |
+| `SYNAPSE_REGISTRATION_SHARED_SECRET` | synapse (register_new_matrix_user) |
+| `SYNAPSE_MACAROON_SECRET_KEY` | synapse (access token issuance) |
+| `SYNAPSE_FORM_SECRET` | synapse (form CSRF) |
 
 ## Shared Config
 
