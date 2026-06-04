@@ -91,3 +91,7 @@ data:
     chat.guneet.dev {
     	reverse_proxy {{ .Values.apps.element.appName }}.{{ .Values.apps.element.namespace }}.svc.cluster.local:{{ .Values.apps.element.port }}
     }
+
+    turn.matrix.guneet.dev {
+    	respond 404
+    }

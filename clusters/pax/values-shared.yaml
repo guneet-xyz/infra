@@ -109,6 +109,9 @@ apps:
     namespace: synapse
     port: 80
     domain: chat.guneet.dev
+  coturn:
+    appName: coturn
+    namespace: coturn
 
 smtp:
   host: smtp.azurecomm.net

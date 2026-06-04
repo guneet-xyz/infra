@@ -141,3 +141,8 @@ apps:
         - type: filesystem
           pvc: pvc-plane-minio-vol-plane-minio-wl-0
       scaleDeployments: true
+
+  - name: coturn
+    chartPath: ./apps/coturn
+    namespace: coturn
+    dependsOn: [caddy]
