@@ -22,15 +22,12 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/auth-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/auth-signing-secret.yaml") . | sha256sum }}
-        checksum/htpasswd-secret: {{ include (print $.Template.BasePath "/htpasswd-secret.yaml") . | sha256sum }}
-        checksum/admin-hash: "__REGISTRY_PUBLIC_ADMIN_HASH__"
-        checksum/ci-hash: "__REGISTRY_PUBLIC_CI_HASH__"
     spec:
       nodeSelector:
         role: primary
       containers:
         - name: auth
-          image: {{ .Values.apps.registryPublic.images.auth.image }}:{{ .Values.apps.registryPublic.images.auth.imageTag }}
+          image: "{{ .Values.apps.registryPublic.images.auth.image }}:{{ .Values.apps.registryPublic.images.auth.imageTag }}"
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -57,9 +54,6 @@ spec:
             - mountPath: /config
               name: auth-config
               readOnly: true
-            - mountPath: /htpasswd
-              name: htpasswd
-              readOnly: true
             - mountPath: /certs
               name: auth-signing
               readOnly: true
@@ -70,9 +64,6 @@ spec:
             items:
               - key: auth_config.yml
                 path: auth_config.yml
-        - name: htpasswd
-          secret:
-            secretName: {{ .Values.apps.registryPublic.secrets.htpasswd }}
         - name: auth-signing
           secret:
             secretName: {{ .Values.apps.registryPublic.secrets.authSigning }}

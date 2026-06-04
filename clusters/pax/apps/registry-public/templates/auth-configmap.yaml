@@ -9,12 +9,11 @@ data:
   # cesanta/docker_auth v1 configuration.
   #
   # Goals:
-  #   * Anonymous (no Authorization header) → token with `pull` on every repo.
-  #   * Authenticated users (Basic auth) → token with full access (push, pull, *).
+  #   * Anonymous (no Authorization header) → token with catalog and pull access.
+  #   * Authenticated users (Basic auth) → token with read-only access.
   #
-  # cesanta/docker_auth does NOT support a top-level `htpasswd:` block; user
-  # credentials must live inline in the `users:` map. Bcrypt hashes are injected
-  # from obscuro at deploy time so this configmap never holds raw secrets in git.
+  # cesanta/docker_auth needs an anonymous user entry to mint read-only tokens
+  # for public Docker clients.
   auth_config.yml: |
     server:
       addr: ":{{ .Values.apps.registryPublic.authPort }}"
@@ -26,16 +25,12 @@ data:
       key: "/certs/tls.key"
 
     users:
-      "admin":
-        password: "__REGISTRY_PUBLIC_ADMIN_HASH__"
-      "ci":
-        password: "__REGISTRY_PUBLIC_CI_HASH__"
       "": {}
 
     acl:
+      - match: {account: "", type: "registry", name: "catalog"}
+        actions: ["*"]
+        comment: "Anonymous catalog listing"
       - match: {account: ""}
         actions: ["pull"]
         comment: "Anonymous pull"
-      - match: {account: "/.+/"}
-        actions: ["*"]
-        comment: "Authenticated users can pull and push"

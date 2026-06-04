@@ -13,8 +13,9 @@ data:
     storage:
       filesystem:
         rootdirectory: /var/lib/registry
-      delete:
-        enabled: true
+      maintenance:
+        readonly:
+          enabled: true
     http:
       addr: :{{ .Values.apps.registryPublic.port }}
       headers:
