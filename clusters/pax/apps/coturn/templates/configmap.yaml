@@ -18,13 +18,14 @@ data:
     cert=/certs/turn.matrix.guneet.dev.crt
     pkey=/certs/turn.matrix.guneet.dev.key
     cipher-list=ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:!aNULL:!MD5
-    no-tlsv1
-    no-tlsv1_1
-    no-loopback-peers
-    no-multicast-peers
-    denied-peer-ip=10.0.0.0-10.255.255.255
-    denied-peer-ip=192.168.0.0-192.168.255.255
-    denied-peer-ip=172.16.0.0-172.31.255.255
+     no-tlsv1
+     no-tlsv1_1
+     denied-peer-ip=10.0.0.0-10.255.255.255
+     denied-peer-ip=192.168.0.0-192.168.255.255
+     denied-peer-ip=172.16.0.0-172.31.255.255
+     denied-peer-ip=127.0.0.0-127.255.255.255
+     denied-peer-ip=::1
+     denied-peer-ip=224.0.0.0-239.255.255.255
     no-cli
     pidfile=/var/run/turnserver.pid
     log-file=stdout
