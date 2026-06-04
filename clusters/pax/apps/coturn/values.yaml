@@ -12,7 +12,7 @@ apps:
     relayPortMax: 49200
     tlsDomain: turn.matrix.guneet.dev
     caddyPvcName: caddy-data
-    caddyCertsHostPath: "/var/lib/rancher/k3s/storage/pvc-e8515c4e-a34d-4722-ae35-1eb83d612842_caddy_caddy-data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/sites/turn.matrix.guneet.dev"
+    caddyCertsHostPath: "/var/lib/rancher/k3s/storage/pvc-e8515c4e-a34d-4722-ae35-1eb83d612842_caddy_caddy-data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/turn.matrix.guneet.dev"
     resources:
       requests:
         cpu: 50m
