@@ -1,0 +1,57 @@
+# Default deny all ingress to the coturn namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: {{ .Values.apps.coturn.namespace }}
+  labels:
+    app: {{ .Values.apps.coturn.appName }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+# Allow STUN/TURN traffic to coturn from anywhere
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-turn-ingress
+  namespace: {{ .Values.apps.coturn.namespace }}
+  labels:
+    app: {{ .Values.apps.coturn.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.coturn.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 3478
+          protocol: UDP
+        - port: 3478
+          protocol: TCP
+        - port: 5349
+          protocol: UDP
+        - port: 5349
+          protocol: TCP
+---
+# Allow UDP relay port range
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-turn-relay-range
+  namespace: {{ .Values.apps.coturn.namespace }}
+  labels:
+    app: {{ .Values.apps.coturn.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.coturn.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: {{ .Values.apps.coturn.relayPortMin }}
+          endPort: {{ .Values.apps.coturn.relayPortMax }}
+          protocol: UDP

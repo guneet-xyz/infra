@@ -423,6 +423,7 @@ Helm values.
 | `SYNAPSE_REGISTRATION_SHARED_SECRET` | synapse (register_new_matrix_user) |
 | `SYNAPSE_MACAROON_SECRET_KEY` | synapse (access token issuance) |
 | `SYNAPSE_FORM_SECRET` | synapse (form CSRF) |
+| `TURN_SHARED_SECRET` | coturn (shared secret for TURN ↔ Synapse authentication) |
 
 ## Shared Config
 

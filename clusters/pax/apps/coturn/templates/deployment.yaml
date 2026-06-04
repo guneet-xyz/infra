@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.coturn.appName }}
+  namespace: {{ .Values.apps.coturn.namespace }}
+  labels:
+    app: {{ .Values.apps.coturn.appName }}
+spec:
+  replicas: {{ .Values.apps.coturn.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.coturn.appName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.coturn.appName }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector:
+        role: primary
+      initContainers:
+        - name: config-subst
+          image: alpine:3.20
+          command:
+            - sh
+            - -c
+            - |
+              apk add --no-cache gettext > /dev/null 2>&1
+              envsubst < /config-template/turnserver.conf > /config/turnserver.conf
+          env:
+            - name: TURN_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: coturn-secret
+                  key: TURN_SHARED_SECRET
+            - name: REALM
+              value: {{ .Values.apps.coturn.realm }}
+            - name: EXTERNAL_IP
+              value: {{ .Values.apps.coturn.externalIp | quote }}
+          volumeMounts:
+            - name: config-template
+              mountPath: /config-template
+              readOnly: true
+            - name: config
+              mountPath: /config
+      containers:
+        - name: coturn
+          image: {{ .Values.apps.coturn.image.repository }}:{{ .Values.apps.coturn.image.tag }}
+          command: ["turnserver", "-c", "/config/turnserver.conf"]
+          ports:
+            - name: turn-udp
+              containerPort: 3478
+              hostPort: 3478
+              protocol: UDP
+            - name: turn-tcp
+              containerPort: 3478
+              hostPort: 3478
+              protocol: TCP
+            - name: turns-udp
+              containerPort: 5349
+              hostPort: 5349
+              protocol: UDP
+            - name: turns-tcp
+              containerPort: 5349
+              hostPort: 5349
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: certs
+              mountPath: /certs
+              readOnly: true
+          resources:
+            requests:
+              cpu: {{ .Values.apps.coturn.resources.requests.cpu }}
+              memory: {{ .Values.apps.coturn.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.apps.coturn.resources.limits.cpu }}
+              memory: {{ .Values.apps.coturn.resources.limits.memory }}
+          readinessProbe:
+            tcpSocket:
+              port: 3478
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 3478
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: config-template
+          configMap:
+            name: coturn-config
+        - name: config
+          emptyDir: {}
+        - name: certs
+          hostPath:
+            path: {{ .Values.apps.coturn.caddyCertsHostPath }}
+            type: DirectoryOrCreate
