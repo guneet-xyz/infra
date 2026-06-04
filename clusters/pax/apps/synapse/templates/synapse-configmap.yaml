@@ -57,6 +57,14 @@ data:
       - server_name: "matrix.org"
 
     suppress_key_server_warning: true
+
+    turn_uris:
+      - "turn:turn.matrix.guneet.dev?transport=udp"
+      - "turn:turn.matrix.guneet.dev?transport=tcp"
+      - "turns:turn.matrix.guneet.dev?transport=tcp"
+    turn_shared_secret: ${TURN_SHARED_SECRET}
+    turn_user_lifetime: 86400000
+    turn_allow_guests: false
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -56,6 +56,11 @@ spec:
                 secretKeyRef:
                   name: app-secret
                   key: SYNAPSE_FORM_SECRET
+            - name: TURN_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: TURN_SHARED_SECRET
           volumeMounts:
             - name: config-source
               mountPath: /config-source
