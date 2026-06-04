@@ -33,6 +33,31 @@ spec:
           protocol: TCP
         - port: {{ .Values.apps.registryPublic.authPort }}
           protocol: TCP
+        - port: {{ .Values.apps.registryPublicUi.port }}
+          protocol: TCP
+---
+# Allow Registry UI to reach the internal read-only Registry API
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ui-to-registry-public-ui-api
+  namespace: {{ .Values.apps.registryPublic.namespace }}
+  labels:
+    app: {{ .Values.apps.registryPublic.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.registryPublicUiApi.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ .Values.apps.registryPublicUi.appName }}
+      ports:
+        - port: {{ .Values.apps.registryPublicUiApi.port }}
+          protocol: TCP
 ---
 # Restrict egress from auth pod: allow only in-cluster DNS
 apiVersion: networking.k8s.io/v1

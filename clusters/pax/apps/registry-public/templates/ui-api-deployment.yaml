@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.registryPublicUiApi.appName }}
+  namespace: {{ .Values.apps.registryPublic.namespace }}
+  labels:
+    app: {{ .Values.apps.registryPublicUiApi.appName }}
+spec:
+  replicas: {{ .Values.apps.registryPublic.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.registryPublicUiApi.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.registryPublicUiApi.appName }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/ui-api-configmap.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: registry
+          image: "{{ .Values.apps.registryPublic.images.registry.image }}:{{ .Values.apps.registryPublic.images.registry.imageTag }}"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 25m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          ports:
+            - containerPort: {{ .Values.apps.registryPublicUiApi.port }}
+              protocol: TCP
+          env:
+            - name: OTEL_TRACES_EXPORTER
+              value: none
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.apps.registryPublicUiApi.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.apps.registryPublicUiApi.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /var/lib/registry
+              name: registry-data
+              readOnly: true
+            - mountPath: /etc/distribution/config.yml
+              name: ui-api-config
+              subPath: config.yml
+              readOnly: true
+      volumes:
+        - name: registry-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.registryPublic.claims.data }}
+        - name: ui-api-config
+          configMap:
+            name: {{ .Values.apps.registryPublic.configMaps.uiApiConfig }}

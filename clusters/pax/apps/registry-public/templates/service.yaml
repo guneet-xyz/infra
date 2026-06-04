@@ -27,3 +27,33 @@ spec:
       targetPort: {{ .Values.apps.registryPublic.authPort }}
   selector:
     app: {{ .Values.apps.registryPublic.authAppName }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.apps.registryPublicUi.appName }}
+  namespace: {{ .Values.apps.registryPublic.namespace }}
+  labels:
+    app: {{ .Values.apps.registryPublicUi.appName }}
+spec:
+  ports:
+    - name: http
+      port: {{ .Values.apps.registryPublicUi.port }}
+      targetPort: {{ .Values.apps.registryPublicUi.port }}
+  selector:
+    app: {{ .Values.apps.registryPublicUi.appName }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.apps.registryPublicUiApi.appName }}
+  namespace: {{ .Values.apps.registryPublic.namespace }}
+  labels:
+    app: {{ .Values.apps.registryPublicUiApi.appName }}
+spec:
+  ports:
+    - name: http
+      port: {{ .Values.apps.registryPublicUiApi.port }}
+      targetPort: {{ .Values.apps.registryPublicUiApi.port }}
+  selector:
+    app: {{ .Values.apps.registryPublicUiApi.appName }}

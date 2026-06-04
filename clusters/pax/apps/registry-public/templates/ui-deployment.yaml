@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.registryPublicUi.appName }}
+  namespace: {{ .Values.apps.registryPublic.namespace }}
+  labels:
+    app: {{ .Values.apps.registryPublicUi.appName }}
+spec:
+  replicas: {{ .Values.apps.registryPublic.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.registryPublicUi.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.registryPublicUi.appName }}
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/ui-secret.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      containers:
+        - name: crui
+          image: "{{ .Values.apps.registryPublic.images.ui.image }}:{{ .Values.apps.registryPublic.images.ui.imageTag }}"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+          ports:
+            - containerPort: {{ .Values.apps.registryPublicUi.port }}
+              protocol: TCP
+          env:
+            - name: REGISTRY_URL
+              value: http://{{ .Values.apps.registryPublicUiApi.appName }}:{{ .Values.apps.registryPublicUiApi.port }}
+            - name: DISPLAY_REGISTRY_URL
+              value: {{ .Values.apps.registryPublic.domain }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.apps.registryPublic.secrets.ui }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apps.registryPublicUi.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apps.registryPublicUi.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10

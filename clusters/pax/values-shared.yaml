@@ -68,8 +68,14 @@ apps:
     port: 5000
     authAppName: registry-public-auth
     authPort: 5001
-    secrets:
-      htpasswd: registry-public-auth-htpasswd
+  registryPublicUi:
+    appName: registry-public-ui
+    namespace: registry-public
+    port: 3000
+  registryPublicUiApi:
+    appName: registry-public-ui-api
+    namespace: registry-public
+    port: 5000
   plane:
     appName: plane
     namespace: plane

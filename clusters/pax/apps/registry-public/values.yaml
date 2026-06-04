@@ -7,6 +7,9 @@ apps:
       auth:
         image: cesanta/docker_auth
         imageTag: "1"
+      ui:
+        image: kvqn/crui
+        imageTag: "0.7.0"
 
     replicas: 1
 
@@ -20,9 +23,11 @@ apps:
     configMaps:
       registryConfig: registry-public-config
       authConfig: registry-public-auth-config
+      uiApiConfig: registry-public-ui-api-config
 
     secrets:
       authSigning: registry-public-auth-signing
+      ui: registry-public-ui-secret
 
     gc:
       schedule: "0 4 * * 0"
