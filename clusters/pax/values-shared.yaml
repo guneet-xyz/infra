@@ -1,7 +1,3 @@
-# Shared values for cross-app references and common config.
-#
-# Usage: helm install -f values-shared.yaml -f apps/<chart>/values.yaml ...
-
 apps:
   caddy:
     appName: caddy
@@ -42,7 +38,7 @@ apps:
     appName: dev-db
     namespace: dev-db
     port: 3000
-    postgresPort: 5432 # raw TCP for caddy-private layer4
+    postgresPort: 5432
   homepage:
     appName: homepage
     namespace: homepage
@@ -66,8 +62,6 @@ apps:
     appName: registry-public
     namespace: registry-public
     port: 5000
-    authAppName: registry-public-auth
-    authPort: 5001
   registryPublicUi:
     appName: registry-public-ui
     namespace: registry-public
@@ -112,8 +106,7 @@ apps:
   coturn:
     appName: coturn
     namespace: coturn
-
 smtp:
   host: smtp.azurecomm.net
-  port: "587"
+  port: '587'
   mailFrom: donotreply@guneet.xyz

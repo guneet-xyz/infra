@@ -21,7 +21,6 @@ spec:
         app: {{ .Values.apps.registryPublic.appName }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/registry-configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/auth-signing-secret.yaml") . | sha256sum }}
     spec:
       nodeSelector:
         role: primary
@@ -60,12 +59,6 @@ spec:
               name: registry-config
               subPath: config.yml
               readOnly: true
-            - mountPath: /config
-              name: registry-config
-              readOnly: true
-            - mountPath: /certs
-              name: auth-signing
-              readOnly: true
       volumes:
         - name: registry-data
           persistentVolumeClaim:
@@ -73,6 +66,3 @@ spec:
         - name: registry-config
           configMap:
             name: {{ .Values.apps.registryPublic.configMaps.registryConfig }}
-        - name: auth-signing
-          secret:
-            secretName: {{ .Values.apps.registryPublic.secrets.authSigning }}

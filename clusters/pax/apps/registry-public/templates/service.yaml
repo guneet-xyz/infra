@@ -16,21 +16,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.apps.registryPublic.authAppName }}
-  namespace: {{ .Values.apps.registryPublic.namespace }}
-  labels:
-    app: {{ .Values.apps.registryPublic.authAppName }}
-spec:
-  ports:
-    - name: http
-      port: {{ .Values.apps.registryPublic.authPort }}
-      targetPort: {{ .Values.apps.registryPublic.authPort }}
-  selector:
-    app: {{ .Values.apps.registryPublic.authAppName }}
----
-apiVersion: v1
-kind: Service
-metadata:
   name: {{ .Values.apps.registryPublicUi.appName }}
   namespace: {{ .Values.apps.registryPublic.namespace }}
   labels:

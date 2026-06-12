@@ -13,30 +13,7 @@ data:
     storage:
       filesystem:
         rootdirectory: /var/lib/registry
-      maintenance:
-        readonly:
-          enabled: true
     http:
       addr: :{{ .Values.apps.registryPublic.port }}
       headers:
         X-Content-Type-Options: [nosniff]
-    auth:
-      token:
-        realm: https://{{ .Values.apps.registryPublic.domain }}/auth
-        service: {{ .Values.apps.registryPublic.domain }}
-        issuer: {{ .Values.apps.registryPublic.domain }}
-        jwks: /config/jwks.json
-        autoredirect: false
-  jwks.json: |
-    {
-      "keys": [
-        {
-          "kty": "RSA",
-          "kid": "WV2K:T7HZ:OSFO:LC74:EKKD:4TTG:GOB3:5GDR:V77V:EUPV:NLMC:XY6R",
-          "use": "sig",
-          "alg": "RS256",
-          "n": "ubDDAma5iRXwsc-oFIr1NbXVrSawK_9Ge3IkAEMK9GA_ckYrrW2dV6RZtB9dnSomrXJWfU7iR3qtDr1jlNnmr9rvk5AHLDzylbCkgf1USLUvCsHPFzijPvtabVVDCOUmdhffbLYgAF0GDT4wPk1IJNyeDtPsFXqA1VDG6aFsekbPRRydersdCFTTMH-SRX3sJ8fAOFF8lSEs4YiM4ivnblQgbJD-zLkL9E6TFe0yVnv2kQTbvbVxDUAs4AqtOzB4q1Fp1QjXTeS2nelhWguWW4fsj2Ls36K3lseOFGhnjObfcb-Ik8f9Lx8xel5c7L_AJpMNfRPNR3HJe6Lm5Y20EQ",
-          "e": "AQAB"
-        }
-      ]
-    }
