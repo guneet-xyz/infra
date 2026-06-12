@@ -25,6 +25,9 @@ spec:
       annotations:
         checksum/caddyfile: {{ include (print $.Template.BasePath "/" $variant "-configmap.yaml") $ | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/cloudflare-secret.yaml") $ | sha256sum }}
+        {{- if eq $variant "public" }}
+        checksum/secret-basic-auth: {{ include (print $.Template.BasePath "/registry-public-basic-auth-secret.yaml") $ | sha256sum }}
+        {{- end }}
     spec:
       nodeSelector:
         role: primary
@@ -45,6 +48,18 @@ spec:
                 secretKeyRef:
                   name: cloudflare-secret
                   key: CLOUDFLARE_API_TOKEN
+            {{- if eq $variant "public" }}
+            - name: REGISTRY_PUBLIC_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: registry-public-basic-auth
+                  key: REGISTRY_PUBLIC_USERNAME
+            - name: REGISTRY_PUBLIC_HTPASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: registry-public-basic-auth
+                  key: REGISTRY_PUBLIC_HTPASSWD
+            {{- end }}
           ports:
             - containerPort: 80
               protocol: TCP
