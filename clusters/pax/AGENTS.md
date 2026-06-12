@@ -414,6 +414,9 @@ Helm values.
 | `REGISTRY_HTPASSWD` | registry |
 | `REGISTRY_USERNAME` | registry-ui |
 | `REGISTRY_PASSWORD` | registry-ui |
+| `REGISTRY_PUBLIC_HTPASSWD` | caddy (Caddy basic_auth bcrypt hash for cr.guneet.dev pushes) |
+| `REGISTRY_PUBLIC_PASSWORD` | none in cluster (Obscuro-stored plaintext for operator records / docker login docs) |
+| `REGISTRY_PUBLIC_USERNAME` | caddy (Caddy basic_auth username for cr.guneet.dev pushes) |
 | `REGISTRY_SESSION_SECRET` | registry-ui |
 | `TS_CLIENT_ID` | tailscale |
 | `TS_CLIENT_SECRET` | tailscale |
