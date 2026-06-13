@@ -45,6 +45,7 @@ kubolt uninstall caddy
 | `llm.guneet.xyz` | litellm |
 | `chat.guneet.xyz` | openwebui |
 | `db.guneet.xyz` | dev-db (HTTP→pgui, TCP/5432→postgres) |
+| `notes.guneet.xyz` | zennotes |
 
 ## Migration from caddy-public
 

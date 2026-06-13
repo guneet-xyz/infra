@@ -60,6 +60,10 @@ data:
     	reverse_proxy {{ .Values.apps.honcho.appName }}.{{ .Values.apps.honcho.namespace }}.svc.cluster.local:{{ .Values.apps.honcho.port }}
     }
 
+    notes.guneet.xyz {
+    	reverse_proxy {{ .Values.apps.zennotes.appName }}.{{ .Values.apps.zennotes.namespace }}.svc.cluster.local:{{ .Values.apps.zennotes.port }}
+    }
+
     hermes.guneet.xyz {
         reverse_proxy http://100.101.181.45:9119
     }

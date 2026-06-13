@@ -146,3 +146,13 @@ apps:
     chartPath: ./apps/coturn
     namespace: coturn
     dependsOn: [caddy]
+
+  - name: zennotes
+    chartPath: ./apps/zennotes
+    namespace: zennotes
+    dependsOn: [caddy, registry-public]
+    backup:
+      targets:
+        - type: filesystem
+          pvc: zennotes-workspace
+      scaleDeployments: true
