@@ -80,7 +80,7 @@ Services must be installed in this order due to dependencies:
 - `*.guneet.dev`, public services, routed through caddy-public
   (eth0 / `172.16.0.5`)
 - `*.guneet.xyz`, private services, routed through caddy-private
-  (tailscale0 / `100.72.80.23`)
+  (tailscale0 / `100.100.1.3`)
 
 This is a best-effort convention, not a strict rule.
 

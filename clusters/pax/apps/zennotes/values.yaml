@@ -1,0 +1,16 @@
+apps:
+  zennotes:
+    images:
+      zennotes:
+        image: cr.guneet.dev/zennotes
+        imageTag: "v2.3.0"
+
+    replicas: 1
+
+    claims:
+      workspace: zennotes-workspace
+      data: zennotes-data
+
+    storage:
+      workspace: 5Gi
+      data: 1Gi

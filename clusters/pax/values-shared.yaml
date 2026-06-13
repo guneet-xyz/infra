@@ -47,6 +47,10 @@ apps:
     appName: honcho
     namespace: honcho
     port: 8000
+  zennotes:
+    appName: zennotes
+    namespace: zennotes
+    port: 7878
   tailscale:
     appName: tailscale-operator
     namespace: tailscale

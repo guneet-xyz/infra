@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.zennotes.appName }}
+  namespace: {{ .Values.apps.zennotes.namespace }}
+  labels:
+    app: {{ .Values.apps.zennotes.appName }}
+spec:
+  replicas: {{ .Values.apps.zennotes.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.zennotes.appName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.zennotes.appName }}
+    spec:
+      nodeSelector:
+        role: primary
+      securityContext:
+        fsGroup: 65532
+      containers:
+        - name: zennotes
+          image: {{ .Values.apps.zennotes.images.zennotes.image }}:{{ .Values.apps.zennotes.images.zennotes.imageTag }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          env:
+            - name: ZENNOTES_CONFIG_PATH
+              value: "/data/server.json"
+            - name: ZENNOTES_VAULT_PATH
+              value: "/workspace"
+            - name: ZENNOTES_ALLOWED_ORIGINS
+              value: "https://notes.guneet.xyz"
+            - name: ZENNOTES_BEHIND_TLS
+              value: "1"
+            - name: ZENNOTES_ALLOW_INSECURE_NOAUTH
+              value: "1"
+            - name: ZENNOTES_TRUSTED_PROXIES
+              value: "10.42.0.0/16"
+          ports:
+            - containerPort: {{ .Values.apps.zennotes.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /api/healthz
+              port: {{ .Values.apps.zennotes.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/healthz
+              port: {{ .Values.apps.zennotes.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /workspace
+              name: {{ .Values.apps.zennotes.claims.workspace }}
+            - mountPath: /data
+              name: {{ .Values.apps.zennotes.claims.data }}
+            - mountPath: /tmp
+              name: tmp
+      volumes:
+        - name: {{ .Values.apps.zennotes.claims.workspace }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.zennotes.claims.workspace }}
+        - name: {{ .Values.apps.zennotes.claims.data }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.zennotes.claims.data }}
+        - name: tmp
+          emptyDir: {}

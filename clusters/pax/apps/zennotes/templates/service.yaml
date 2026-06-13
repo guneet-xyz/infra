@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.apps.zennotes.appName }}
+  namespace: {{ .Values.apps.zennotes.namespace }}
+  labels:
+    app: {{ .Values.apps.zennotes.appName }}
+spec:
+  ports:
+    - name: http
+      port: {{ .Values.apps.zennotes.port }}
+      targetPort: {{ .Values.apps.zennotes.port }}
+  selector:
+    app: {{ .Values.apps.zennotes.appName }}

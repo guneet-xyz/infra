@@ -1,0 +1,40 @@
+name: Build ZenNotes Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Upstream ZenNotes tag to build (e.g., v2.3.0)"
+        required: true
+        default: "v2.3.0"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout upstream zennotes
+        uses: actions/checkout@v4
+        with:
+          repository: ZenNotes/zennotes
+          ref: ${{ inputs.tag }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to cr.guneet.dev
+        uses: docker/login-action@v3
+        with:
+          registry: cr.guneet.dev
+          username: ${{ secrets.REGISTRY_PUBLIC_USERNAME }}
+          password: ${{ secrets.REGISTRY_PUBLIC_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            cr.guneet.dev/zennotes:${{ inputs.tag }}
+            cr.guneet.dev/zennotes:latest
