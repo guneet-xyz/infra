@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.ntfy.appName }}
+  namespace: {{ .Values.apps.ntfy.namespace }}
+  labels:
+    app: {{ .Values.apps.ntfy.appName }}
+spec:
+  replicas: {{ .Values.apps.ntfy.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.ntfy.appName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.ntfy.appName }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      securityContext:
+        fsGroup: 65532
+      containers:
+        - name: ntfy
+          image: {{ .Values.apps.ntfy.images.ntfy.image }}:{{ .Values.apps.ntfy.images.ntfy.imageTag }}
+          args: ["serve", "--config", "/etc/ntfy/server.yml"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          ports:
+            - containerPort: {{ .Values.apps.ntfy.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /v1/health
+              port: {{ .Values.apps.ntfy.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /v1/health
+              port: {{ .Values.apps.ntfy.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /etc/ntfy
+              name: server-config
+              readOnly: true
+            - mountPath: /var/cache/ntfy
+              name: {{ .Values.apps.ntfy.claims.cache }}
+      volumes:
+        - name: server-config
+          configMap:
+            name: {{ .Values.apps.ntfy.configMaps.serverYml }}
+        - name: {{ .Values.apps.ntfy.claims.cache }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.apps.ntfy.claims.cache }}

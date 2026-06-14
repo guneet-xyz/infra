@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.apps.ntfy.claims.cache }}
+  namespace: {{ .Values.apps.ntfy.namespace }}
+  labels:
+    app: {{ .Values.apps.ntfy.appName }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.apps.ntfy.storage.cache }}

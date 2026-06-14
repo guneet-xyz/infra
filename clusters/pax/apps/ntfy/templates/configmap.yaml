@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.apps.ntfy.configMaps.serverYml }}
+  namespace: {{ .Values.apps.ntfy.namespace }}
+  labels:
+    app: {{ .Values.apps.ntfy.appName }}
+data:
+  server.yml: |
+    base-url: "https://ntfy.guneet.xyz"
+    listen-http: ":80"
+    cache-file: "/var/cache/ntfy/cache.db"
+    behind-proxy: true

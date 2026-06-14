@@ -1,0 +1,17 @@
+apps:
+  ntfy:
+    images:
+      ntfy:
+        image: binwiederhier/ntfy
+        imageTag: "v2.24"
+
+    replicas: 1
+
+    claims:
+      cache: ntfy-cache
+
+    configMaps:
+      serverYml: ntfy-server-config
+
+    storage:
+      cache: 1Gi

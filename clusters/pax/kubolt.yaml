@@ -156,3 +156,13 @@ apps:
         - type: filesystem
           pvc: zennotes-workspace
       scaleDeployments: true
+
+  - name: ntfy
+    chartPath: ./apps/ntfy
+    namespace: ntfy
+    dependsOn: [caddy]
+    backup:
+      targets:
+        - type: filesystem
+          pvc: ntfy-cache
+      scaleDeployments: true
