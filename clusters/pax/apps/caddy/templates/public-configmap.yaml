@@ -40,7 +40,10 @@ data:
     	header @favicon Content-Type image/svg+xml
     	respond @favicon `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0f172a"/><path d="M18 22 32 14l14 8v20l-14 8-14-8z" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linejoin="round"/><path d="M18 22 32 30l14-8M32 30v20" fill="none" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>` 200
 
-    	@write method POST PUT PATCH DELETE
+    	@write {
+    		path /v2/*
+    		method POST PUT PATCH DELETE
+    	}
     	basic_auth @write {
     		{env.REGISTRY_PUBLIC_USERNAME} {env.REGISTRY_PUBLIC_HTPASSWD}
     	}
