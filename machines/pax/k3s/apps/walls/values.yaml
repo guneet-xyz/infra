@@ -1,9 +1,9 @@
 apps:
   walls:
+    image: kvqn/walls
+    imageTag: "1.7.0"
+
     images:
-      walls:
-        image: kvqn/walls
-        imageTag: "1.7.0"
       migrate:
         image: kvqn/walls-migrate
         imageTag: "1.7.0"
@@ -12,6 +12,40 @@ apps:
         imageTag: "17.9-alpine"
 
     replicas: 1
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+    envFrom:
+      - secretRef:
+          name: app-secret
+
+    initContainers:
+      - name: db-migrate
+        image: kvqn/walls-migrate:1.7.0
+        env:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: app-secret
+                key: DATABASE_URL
+
+    probes:
+      readiness:
+        path: /
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      liveness:
+        path: /
+        initialDelaySeconds: 15
+        periodSeconds: 10
 
     domain: walls.guneet.dev
 
@@ -25,4 +59,3 @@ apps:
 
     claims:
       postgresData: walls-postgres-data
-

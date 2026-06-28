@@ -5,5 +5,5 @@ dependencies:
 - name: platform
   repository: file://../../shared/platform
   version: 0.3.0
-digest: sha256:d1fa551a64c9cbf1cf62e0df4be19318c1c09b2d4fbf0b946d85d65c3a75d6a2
-generated: "2026-06-28T18:49:58.771171597Z"
+digest: sha256:7c52249a88a7df8ab13180d2994ce3d7d1f54afe4f9db98a3cb3b1a86d11f6c3
+generated: "2026-06-28T19:08:25.844548311Z"
