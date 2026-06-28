@@ -2,5 +2,8 @@ dependencies:
 - name: postgres
   repository: file://../../shared/postgres
   version: 0.1.0
-digest: sha256:2e41ffdcfe27209260f7d32158e0775201320328e1e9e10570638e5affe5d698
-generated: "2026-04-22T17:35:08.57786+05:30"
+- name: platform
+  repository: file://../../shared/platform
+  version: 0.2.0
+digest: sha256:ca2396501f8197d2a1be2e03a8f126f1b83ffd80a464bf7bf39d3ef0c3f881c5
+generated: "2026-06-28T17:54:24.514149149Z"

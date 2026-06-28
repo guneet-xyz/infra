@@ -1,38 +1,6 @@
-# Default deny all ingress
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: default-deny-ingress
-  namespace: {{ .Values.apps.walls.namespace }}
-  labels:
-    app: {{ .Values.apps.walls.appName }}
-spec:
-  podSelector: {}
-  policyTypes:
-    - Ingress
+{{ include "platform.networkpolicy.defaultDeny" (dict "app" .Values.apps.walls) }}
 ---
-# Allow Caddy to reach the walls app
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-from-caddy
-  namespace: {{ .Values.apps.walls.namespace }}
-  labels:
-    app: {{ .Values.apps.walls.appName }}
-spec:
-  podSelector:
-    matchLabels:
-      app: {{ .Values.apps.walls.appName }}
-  policyTypes:
-    - Ingress
-  ingress:
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: {{ .Values.apps.caddy.namespace }}
-      ports:
-        - port: {{ .Values.apps.walls.port }}
-          protocol: TCP
+{{ include "platform.networkpolicy.allowFromCaddy" (dict "app" .Values.apps.walls "caddy" .Values.apps.caddy) }}
 ---
 # Allow walls app to reach its Postgres
 apiVersion: networking.k8s.io/v1
