@@ -1,0 +1,87 @@
+# Override values for the plane-ce upstream dependency.
+# All keys nested under plane-ce: (Helm dependency alias).
+#
+# Secrets: use __PLACEHOLDER__ tokens — substituted at deploy time by obscuro.
+# See: machines/pax/k3s/plugins/obscuro/plugin.yaml
+
+plane-ce:
+  # Ingress resource creation disabled — Caddy handles routing.
+  # appHost is still required: the chart uses it to set WEB_URL and CORS_ALLOWED_ORIGINS
+  # in the app-vars ConfigMap, independent of whether the Ingress resource is created.
+  ingress:
+    enabled: false
+    appHost: "plane.guneet.xyz"
+
+  ssl:
+    generateCerts: false
+    createIssuer: false
+
+  # -- Stateful services (in-cluster, local-path storage) --
+
+  postgres:
+    local_setup: true
+    storageClass: local-path
+    volumeSize: 5Gi
+
+  redis:
+    local_setup: true
+    storageClass: local-path
+    volumeSize: 500Mi
+
+  rabbitmq:
+    local_setup: true
+    storageClass: local-path
+    volumeSize: 500Mi
+    default_password: __PLANE_RABBITMQ_PASSWORD__
+
+  minio:
+    local_setup: true
+    storageClass: local-path
+    volumeSize: 10Gi
+    root_password: __PLANE_MINIO_ROOT_PASSWORD__
+
+  # -- App configuration --
+  env:
+    # CRITICAL: must be set for Plane to generate correct URLs
+    secret_key: __PLANE_SECRET_KEY__
+    pgdb_password: __PLANE_POSTGRES_PASSWORD__
+    # Override upstream default (http://{ingress.appHost}) so WEB_URL/CORS use https
+    website_url: "https://plane.guneet.xyz"
+    # Override upstream hardcoded default
+    live_server_secret_key: __PLANE_LIVE_SERVER_SECRET_KEY__
+
+  # -- Compute (single-node k3s) --
+  web:
+    replicas: 1
+    nodeSelector:
+      role: primary
+
+  space:
+    replicas: 1
+    nodeSelector:
+      role: primary
+
+  admin:
+    replicas: 1
+    nodeSelector:
+      role: primary
+
+  api:
+    replicas: 1
+    nodeSelector:
+      role: primary
+
+  worker:
+    replicas: 1
+    nodeSelector:
+      role: primary
+
+  beatworker:
+    replicas: 1
+    nodeSelector:
+      role: primary
+
+  live:
+    replicas: 1
+    nodeSelector:
+      role: primary
