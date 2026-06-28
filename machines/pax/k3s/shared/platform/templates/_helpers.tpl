@@ -80,8 +80,49 @@ Optional: concurrencyPolicy (default "Forbid"), successfulJobsHistoryLimit (defa
           failedJobsHistoryLimit (default 3), volumes (list of volume specs)
 */}}
 
+{{/*
+=== platform.deployment — v0.3.0 NEW optional keys ===
+  app.automountServiceAccountToken (bool; pod spec; use hasKey to emit explicit false)
+  app.dnsPolicy (string; pod spec; e.g. "ClusterFirst", "Default")
+  app.enableServiceLinks (bool; pod spec; use hasKey to emit explicit false)
+  app.imagePullPolicy (string; container; "Always"|"IfNotPresent"|"Never")
+  app.ports[0].name (string; container port name for named-port refs; e.g. "http")
+  app.securityContext.seccompProfile.type (string; e.g. "RuntimeDefault")
+  app.strategy.rollingUpdate.maxUnavailable (int|string; default 0; only when app.strategy is dict)
+  app.strategy.rollingUpdate.maxSurge (int|string; default 1; only when app.strategy is dict)
+
+=== platform.service — v0.3.0 NEW optional key ===
+  app.service.targetPort (string|int; overrides default numeric port for named-port refs)
+
+=== platform.networkpolicy.allowFromCaddy — v0.3.0 extension ===
+  app.allowFromCaddy.extraPorts (list of port numbers; emitted alongside default app.port)
+
+=== platform.networkpolicy.allowFromPodSelector (NEW define, v0.3.0) ===
+  Required: app.appName, app.namespace, app.port
+  Required: sourcePodSelector.matchLabels (dict, e.g. {app: "source-app"})
+  Optional: sourceNamespace (string), name (string, overrides generated allow-from-<source> name)
+
+=== platform.cronjob — v0.3.0 NEW optional keys on container ===
+  container.imagePullPolicy (string; "Always"|"IfNotPresent"|"Never")
+  container.securityContext (dict; keys: allowPrivilegeEscalation, readOnlyRootFilesystem,
+                              runAsNonRoot, capabilities.drop)
+*/}}
+
 {{- define "platform.deployment" -}}
 {{- $strategy := default "RollingUpdate" .app.strategy -}}
+{{- $ruMaxUnavailable := 0 -}}
+{{- $ruMaxSurge := 1 -}}
+{{- if kindIs "map" .app.strategy -}}
+{{- $strategy = default "RollingUpdate" .app.strategy.type -}}
+{{- with .app.strategy.rollingUpdate -}}
+{{- if hasKey . "maxUnavailable" -}}
+{{- $ruMaxUnavailable = .maxUnavailable -}}
+{{- end -}}
+{{- if hasKey . "maxSurge" -}}
+{{- $ruMaxSurge = .maxSurge -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -98,8 +139,8 @@ spec:
     type: {{ $strategy }}
     {{- if eq $strategy "RollingUpdate" }}
     rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+      maxUnavailable: {{ $ruMaxUnavailable }}
+      maxSurge: {{ $ruMaxSurge }}
     {{- end }}
   template:
     metadata:
@@ -117,6 +158,15 @@ spec:
       {{- if .app.serviceAccountName }}
       serviceAccountName: {{ .app.serviceAccountName }}
       {{- end }}
+      {{- if hasKey .app "automountServiceAccountToken" }}
+      automountServiceAccountToken: {{ .app.automountServiceAccountToken }}
+      {{- end }}
+      {{- if .app.dnsPolicy }}
+      dnsPolicy: {{ .app.dnsPolicy }}
+      {{- end }}
+      {{- if hasKey .app "enableServiceLinks" }}
+      enableServiceLinks: {{ .app.enableServiceLinks }}
+      {{- end }}
       {{- if .app.fsGroup }}
       securityContext:
         fsGroup: {{ .app.fsGroup }}
@@ -128,6 +178,9 @@ spec:
       containers:
          - name: {{ .app.appName }}
            image: {{ .app.image }}:{{ .app.imageTag }}
+           {{- if .app.imagePullPolicy }}
+           imagePullPolicy: {{ .app.imagePullPolicy }}
+           {{- end }}
            {{- with .app.command }}
            command:
              {{- toYaml . | nindent 12 }}
@@ -160,6 +213,10 @@ spec:
                 - {{ . }}
                 {{- end }}
             {{- end }}
+            {{- if .app.securityContext.seccompProfile }}
+            seccompProfile:
+              type: {{ .app.securityContext.seccompProfile.type }}
+            {{- end }}
             {{- else }}
             allowPrivilegeEscalation: false
             {{- end }}
@@ -175,6 +232,9 @@ spec:
            ports:
              - containerPort: {{ .app.port }}
                protocol: TCP
+               {{- if and .app.ports (index .app.ports 0).name }}
+               name: {{ (index .app.ports 0).name }}
+               {{- end }}
            {{- if .app.env }}
            env:
              {{- toYaml .app.env | nindent 12 }}
@@ -262,7 +322,7 @@ spec:
   ports:
     - name: http
       port: {{ .app.port }}
-      targetPort: {{ .app.port }}
+      targetPort: {{ default .app.port ((.app.service).targetPort) }}
   selector:
     app: {{ .app.appName }}
 {{- end -}}
@@ -319,6 +379,10 @@ spec:
       ports:
         - port: {{ .app.port }}
           protocol: TCP
+        {{- range ((.app.allowFromCaddy).extraPorts) }}
+        - port: {{ . }}
+          protocol: TCP
+        {{- end }}
 {{- end -}}
 
 {{- define "platform.networkpolicy.allowFromSameNamespace" -}}
@@ -412,6 +476,28 @@ spec:
           containers:
             - name: {{ .name }}
               image: {{ .container.image }}:{{ .container.imageTag }}
+              {{- if .container.imagePullPolicy }}
+              imagePullPolicy: {{ .container.imagePullPolicy }}
+              {{- end }}
+              {{- if .container.securityContext }}
+              securityContext:
+                {{- if hasKey .container.securityContext "allowPrivilegeEscalation" }}
+                allowPrivilegeEscalation: {{ .container.securityContext.allowPrivilegeEscalation }}
+                {{- end }}
+                {{- if hasKey .container.securityContext "readOnlyRootFilesystem" }}
+                readOnlyRootFilesystem: {{ .container.securityContext.readOnlyRootFilesystem }}
+                {{- end }}
+                {{- if hasKey .container.securityContext "runAsNonRoot" }}
+                runAsNonRoot: {{ .container.securityContext.runAsNonRoot }}
+                {{- end }}
+                {{- if .container.securityContext.capabilities }}
+                capabilities:
+                  drop:
+                    {{- range .container.securityContext.capabilities.drop }}
+                    - {{ . }}
+                    {{- end }}
+                {{- end }}
+              {{- end }}
               {{- with .container.command }}
               command:
                 {{- toYaml . | nindent 16 }}
@@ -428,4 +514,33 @@ spec:
           volumes:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+{{- end -}}
+
+{{- define "platform.networkpolicy.allowFromPodSelector" -}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ default (printf "allow-from-%s" ((.sourcePodSelector.matchLabels.app) | replace "-" "")) .name }}
+  namespace: {{ .app.namespace }}
+  labels:
+    app: {{ .app.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .app.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- toYaml .sourcePodSelector.matchLabels | nindent 14 }}
+          {{- if .sourceNamespace }}
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .sourceNamespace }}
+          {{- end }}
+      ports:
+        - port: {{ .app.port }}
+          protocol: TCP
 {{- end -}}
