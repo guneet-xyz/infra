@@ -1,9 +1,9 @@
 apps:
   devDb:
+    image: kvqn/pgui
+    imageTag: "latest"
+
     images:
-      pgui:
-        image: kvqn/pgui
-        imageTag: "latest"
       postgres:
         image: postgres
         imageTag: "17.9-alpine"
@@ -11,6 +11,42 @@ apps:
     replicas: 1
 
     domain: db.guneet.xyz
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    resources:
+      requests:
+        cpu: 25m
+        memory: 128Mi
+      limits:
+        memory: 256Mi
+
+    env:
+      - name: DB_1_HOST
+        value: dev-db-postgres.dev-db.svc.cluster.local
+      - name: DB_1_PORT
+        value: "5432"
+      - name: DB_1_USERNAME
+        value: postgres
+      - name: DB_1_DISPLAY_NAME
+        value: "dev-db"
+      - name: DB_1_AUTODISCOVER
+        value: "true"
+
+    envFrom:
+      - secretRef:
+          name: pgui-secret
+
+    probes:
+      readiness:
+        path: /
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      liveness:
+        path: /
+        initialDelaySeconds: 15
+        periodSeconds: 10
 
     postgres:
       serviceName: dev-db-postgres
