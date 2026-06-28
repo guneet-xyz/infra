@@ -1,11 +1,55 @@
 apps:
   ntfy:
-    images:
-      ntfy:
-        image: binwiederhier/ntfy
-        imageTag: "v2.24"
+    image: binwiederhier/ntfy
+    imageTag: "v2.24"
 
     replicas: 1
+
+    strategy: Recreate
+
+    fsGroup: 65532
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 65532
+      runAsGroup: 65532
+      capabilities:
+        drop:
+          - ALL
+
+    args:
+      - serve
+      - --config
+      - /etc/ntfy/server.yml
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
+
+    probes:
+      readiness:
+        path: /v1/health
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      liveness:
+        path: /v1/health
+        initialDelaySeconds: 15
+        periodSeconds: 10
+
+    volumes:
+      - name: server-config
+        mountPath: /etc/ntfy
+        type: configMap
+        configMapName: ntfy-server-config
+        readOnly: true
+      - name: ntfy-cache
+        mountPath: /var/cache/ntfy
+        type: pvc
+        claimName: ntfy-cache
 
     claims:
       cache: ntfy-cache
