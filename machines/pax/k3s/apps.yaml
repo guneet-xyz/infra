@@ -1,0 +1,259 @@
+# Manually maintained informational app catalog.
+# kubolt.yaml and values-shared.yaml remain the operational sources of truth.
+# Do not edit operational files to match this catalog; edit this catalog to match them.
+apiVersion: apps.guneet.dev/v1
+apps:
+  caddy:
+    namespace: caddy
+    appName: caddy
+    exposure:
+      public: none
+      private: none
+    backup:
+      - type: filesystem
+        pvc: caddy-data
+
+  registry:
+    namespace: registry
+    appName: registry
+    port: 5000
+    exposure:
+      public: none
+      private: cr.guneet.xyz
+    dependsOn: [caddy]
+    backup:
+      - type: filesystem
+        pvc: registry-data
+    services:
+      registryUi:
+        appName: registry-ui
+        port: 3000
+
+  walls:
+    namespace: walls
+    appName: walls
+    port: 3000
+    exposure:
+      public: walls.guneet.dev
+      private: none
+    dependsOn: [caddy, registry]
+    backup:
+      - type: pg_dump
+        podSelector: app=walls-postgres
+
+  litellm:
+    namespace: litellm
+    appName: litellm
+    port: 4000
+    exposure:
+      public: llm.guneet.dev
+      private: llm.guneet.xyz
+    dependsOn: [caddy, registry]
+    backup:
+      - type: filesystem
+        pvc: litellm-data
+      - type: pg_dump
+        podSelector: app=litellm-postgres
+
+  openwebui:
+    namespace: openwebui
+    appName: openwebui
+    port: 8080
+    exposure:
+      public: none
+      private: chat.guneet.xyz
+    dependsOn: [caddy, registry]
+    backup:
+      - type: filesystem
+        pvc: openwebui-data
+
+  infisical:
+    namespace: infisical
+    appName: infisical
+    port: 8080
+    exposure:
+      public: infisical.guneet.dev
+      private: none
+    dependsOn: [caddy, registry]
+    backup:
+      - type: pg_dump
+        podSelector: app=infisical-postgres
+
+  dev-db:
+    namespace: dev-db
+    appName: dev-db
+    port: 3000
+    exposure:
+      public: none
+      private: db.guneet.xyz
+    dependsOn: [caddy, registry]
+    backup:
+      - type: pg_dump
+        podSelector: app=dev-db-postgres
+
+  honcho:
+    namespace: honcho
+    appName: honcho
+    port: 8000
+    exposure:
+      public: none
+      private: honcho.guneet.xyz
+    dependsOn: [caddy, registry]
+    backup:
+      - type: pg_dump
+        podSelector: app=honcho-postgres
+
+  synapse:
+    namespace: synapse
+    appName: synapse
+    port: 8008
+    exposure:
+      public: matrix.guneet.dev
+      private: none
+    dependsOn: [caddy, registry]
+    backup:
+      - type: pg_dump
+        podSelector: app=synapse-postgres
+      - type: filesystem
+        pvc: synapse-media
+      - type: filesystem
+        pvc: synapse-data
+    services:
+      element:
+        appName: element
+        port: 80
+        exposure:
+          public: chat.guneet.dev
+          private: none
+
+  headlamp:
+    namespace: headlamp
+    appName: headlamp
+    port: 80
+    exposure:
+      public: none
+      private: headlamp.guneet.xyz
+    dependsOn: [caddy, registry]
+
+  homepage:
+    namespace: homepage
+    appName: homepage
+    port: 3000
+    exposure:
+      public: none
+      private: home.guneet.xyz
+    dependsOn: [caddy, registry]
+
+  portainer:
+    namespace: portainer
+    appName: portainer
+    port: 9000
+    exposure:
+      public: none
+      private: portainer.guneet.xyz
+    dependsOn: [caddy, registry]
+
+  demo:
+    namespace: demo
+    appName: demo
+    port: 80
+    exposure:
+      public: demo.guneet.dev
+      private: none
+    dependsOn: [caddy, registry]
+    services:
+      demoFallback:
+        appName: demo-fallback
+        port: 80
+
+  tailscale:
+    namespace: tailscale
+    appName: tailscale-operator
+    exposure:
+      public: none
+      private: none
+    dependsOn: [caddy, registry]
+
+  registry-public:
+    namespace: registry-public
+    appName: registry-public
+    port: 5000
+    exposure:
+      public: cr.guneet.dev
+      private: none
+    dependsOn: [caddy]
+    backup:
+      - type: filesystem
+        pvc: registry-public-data
+    services:
+      registryPublicUi:
+        appName: registry-public-ui
+        port: 3000
+      registryPublicUiApi:
+        appName: registry-public-ui-api
+        port: 5000
+
+  plane:
+    namespace: plane
+    appName: plane
+    exposure:
+      public: none
+      private: plane.guneet.xyz
+    dependsOn: [caddy, registry]
+    backup:
+      - type: pg_dump
+        podSelector: app.name=plane-plane-pgdb
+      - type: filesystem
+        pvc: pvc-plane-minio-vol-plane-minio-wl-0
+    services:
+      web:
+        appName: plane-web
+        port: 3000
+      space:
+        appName: plane-space
+        port: 3000
+      admin:
+        appName: plane-admin
+        port: 3000
+      api:
+        appName: plane-api
+        port: 8000
+      live:
+        appName: plane-live
+        port: 3000
+      minio:
+        appName: plane-minio
+        port: 9000
+    notes: "Single hostname plane.guneet.xyz path-routes to 6 internal services; see apps/plane/AGENTS.md"
+
+  coturn:
+    namespace: coturn
+    appName: coturn
+    exposure:
+      public: turn.matrix.guneet.dev
+      private: none
+    dependsOn: [caddy]
+
+  zennotes:
+    namespace: zennotes
+    appName: zennotes
+    port: 7878
+    exposure:
+      public: none
+      private: notes.guneet.xyz
+    dependsOn: [caddy, registry-public]
+    backup:
+      - type: filesystem
+        pvc: zennotes-workspace
+
+  ntfy:
+    namespace: ntfy
+    appName: ntfy
+    port: 80
+    exposure:
+      public: none
+      private: ntfy.guneet.xyz
+    dependsOn: [caddy]
+    backup:
+      - type: filesystem
+        pvc: ntfy-cache
