@@ -1,14 +1,1 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.apps.portainer.appName }}
-  namespace: {{ .Values.apps.portainer.namespace }}
-  labels:
-    app: {{ .Values.apps.portainer.appName }}
-spec:
-  ports:
-    - name: http
-      port: {{ .Values.apps.portainer.port }}
-      targetPort: {{ .Values.apps.portainer.port }}
-  selector:
-    app: {{ .Values.apps.portainer.appName }}
+{{ include "platform.service" (dict "app" .Values.apps.portainer) }}

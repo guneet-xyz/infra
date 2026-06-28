@@ -1,40 +1,7 @@
-# Default deny all ingress
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: default-deny-ingress
-  namespace: {{ .Values.apps.portainer.namespace }}
-  labels:
-    app: {{ .Values.apps.portainer.appName }}
-spec:
-  podSelector: {}
-  policyTypes:
-    - Ingress
+{{ include "platform.networkpolicy.defaultDeny" (dict "app" .Values.apps.portainer) }}
 ---
-# Allow Caddy to reach Portainer
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-from-caddy
-  namespace: {{ .Values.apps.portainer.namespace }}
-  labels:
-    app: {{ .Values.apps.portainer.appName }}
-spec:
-  podSelector:
-    matchLabels:
-      app: {{ .Values.apps.portainer.appName }}
-  policyTypes:
-    - Ingress
-  ingress:
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: {{ .Values.apps.caddy.namespace }}
-      ports:
-        - port: {{ .Values.apps.portainer.port }}
-          protocol: TCP
+{{ include "platform.networkpolicy.allowFromCaddy" (dict "app" .Values.apps.portainer "caddy" .Values.apps.caddy) }}
 ---
-# Allow homepage to reach Portainer
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

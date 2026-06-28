@@ -1,11 +1,20 @@
 apps:
   portainer:
-    images:
-      portainer:
-        image: portainer/portainer-ce
-        imageTag: lts
+    image: portainer/portainer-ce
+    imageTag: lts
+
     replicas: 1
+
+    rbac:
+      rules:
+        - apiGroups: ["*"]
+          resources: ["*"]
+          verbs: ["*"]
+        - nonResourceURLs: ["*"]
+          verbs: ["*"]
+
     claims:
       data: portainer-data
+
     storage:
       data: 1Gi

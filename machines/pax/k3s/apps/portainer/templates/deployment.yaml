@@ -25,7 +25,7 @@ spec:
         role: primary
       containers:
         - name: portainer
-          image: {{ .Values.apps.portainer.images.portainer.image }}:{{ .Values.apps.portainer.images.portainer.imageTag }}
+          image: {{ .Values.apps.portainer.image }}:{{ .Values.apps.portainer.imageTag }}
           ports:
             - containerPort: {{ .Values.apps.portainer.port }}
               protocol: TCP

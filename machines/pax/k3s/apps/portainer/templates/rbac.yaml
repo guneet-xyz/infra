@@ -1,27 +1,3 @@
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: {{ .Values.apps.portainer.appName }}
-  labels:
-    app: {{ .Values.apps.portainer.appName }}
-rules:
-  - apiGroups: ["*"]
-    resources: ["*"]
-    verbs: ["*"]
-  - nonResourceURLs: ["*"]
-    verbs: ["*"]
+{{ include "platform.rbac.clusterrole" (dict "app" .Values.apps.portainer "rules" .Values.apps.portainer.rbac.rules) }}
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: {{ .Values.apps.portainer.appName }}
-  labels:
-    app: {{ .Values.apps.portainer.appName }}
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: {{ .Values.apps.portainer.appName }}
-subjects:
-  - kind: ServiceAccount
-    name: {{ .Values.apps.portainer.appName }}
-    namespace: {{ .Values.apps.portainer.namespace }}
+{{ include "platform.rbac.clusterrolebinding" (dict "app" .Values.apps.portainer) }}
