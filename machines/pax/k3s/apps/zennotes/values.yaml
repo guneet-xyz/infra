@@ -1,11 +1,67 @@
 apps:
   zennotes:
-    images:
-      zennotes:
-        image: cr.guneet.dev/zennotes
-        imageTag: "v2.3.0"
+    image: cr.guneet.dev/zennotes
+    imageTag: "v2.3.0"
 
     replicas: 1
+
+    strategy: Recreate
+
+    fsGroup: 65532
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 65532
+      runAsGroup: 65532
+      capabilities:
+        drop:
+          - ALL
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+    env:
+      - name: ZENNOTES_CONFIG_PATH
+        value: "/data/server.json"
+      - name: ZENNOTES_VAULT_PATH
+        value: "/workspace"
+      - name: ZENNOTES_ALLOWED_ORIGINS
+        value: "https://notes.guneet.xyz"
+      - name: ZENNOTES_BEHIND_TLS
+        value: "1"
+      - name: ZENNOTES_ALLOW_INSECURE_NOAUTH
+        value: "1"
+      - name: ZENNOTES_TRUSTED_PROXIES
+        value: "10.42.0.0/16"
+
+    probes:
+      readiness:
+        path: /api/healthz
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      liveness:
+        path: /api/healthz
+        initialDelaySeconds: 15
+        periodSeconds: 10
+
+    volumes:
+      - name: zennotes-workspace
+        mountPath: /workspace
+        type: pvc
+        claimName: zennotes-workspace
+      - name: zennotes-data
+        mountPath: /data
+        type: pvc
+        claimName: zennotes-data
+      - name: tmp
+        mountPath: /tmp
+        type: emptyDir
 
     claims:
       workspace: zennotes-workspace

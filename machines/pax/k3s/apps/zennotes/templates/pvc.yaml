@@ -1,27 +1,3 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.apps.zennotes.claims.workspace }}
-  namespace: {{ .Values.apps.zennotes.namespace }}
-  labels:
-    app: {{ .Values.apps.zennotes.appName }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.apps.zennotes.storage.workspace }}
+{{ include "platform.pvc" (dict "app" .Values.apps.zennotes "name" .Values.apps.zennotes.claims.workspace "storage" .Values.apps.zennotes.storage.workspace) }}
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.apps.zennotes.claims.data }}
-  namespace: {{ .Values.apps.zennotes.namespace }}
-  labels:
-    app: {{ .Values.apps.zennotes.appName }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.apps.zennotes.storage.data }}
+{{ include "platform.pvc" (dict "app" .Values.apps.zennotes "name" .Values.apps.zennotes.claims.data "storage" .Values.apps.zennotes.storage.data) }}
