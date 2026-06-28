@@ -1,11 +1,41 @@
 apps:
   homepage:
-    images:
-      homepage:
-        image: ghcr.io/gethomepage/homepage
-        imageTag: "latest"
+    image: ghcr.io/gethomepage/homepage
+    imageTag: "latest"
 
     replicas: 1
+
+    serviceAccount:
+      secrets:
+        - homepage-sa-token
+
+    rbac:
+      rules:
+        - apiGroups:
+            - ""
+          resources:
+            - namespaces
+            - pods
+            - nodes
+          verbs:
+            - get
+            - list
+        - apiGroups:
+            - extensions
+            - networking.k8s.io
+          resources:
+            - ingresses
+          verbs:
+            - get
+            - list
+        - apiGroups:
+            - metrics.k8s.io
+          resources:
+            - nodes
+            - pods
+          verbs:
+            - get
+            - list
 
     configMaps:
       config: homepage-config

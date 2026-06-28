@@ -43,7 +43,7 @@ spec:
               name: config
       containers:
         - name: homepage
-          image: {{ .Values.apps.homepage.images.homepage.image }}:{{ .Values.apps.homepage.images.homepage.imageTag }}
+          image: {{ .Values.apps.homepage.image }}:{{ .Values.apps.homepage.imageTag }}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
