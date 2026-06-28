@@ -108,6 +108,19 @@ Optional: concurrencyPolicy (default "Forbid"), successfulJobsHistoryLimit (defa
                               runAsNonRoot, capabilities.drop)
 */}}
 
+{{/*
+=== platform.deployment — v0.4.0 NEW optional key ===
+  app.volumes[*].items (list; only meaningful when type: configMap; projects specific keys
+                         to specific paths; emitted as configMap.items[] in pod volume spec;
+                         items: [{key: <configmap-key>, path: <projected-file-name>}])
+
+=== platform.networkpolicy.allowFromNamespace (NEW define, v0.4.0) ===
+  Required: app.appName, app.namespace, app.port, sourceNamespace (string)
+  Optional: name (string; overrides generated allow-from-<sourceNamespace> name)
+  Emits namespaceSelector-only ingress (no podSelector in the from clause) — use when
+  any pod in sourceNamespace should be allowed to reach this app on app.port.
+*/}}
+
 {{- define "platform.deployment" -}}
 {{- $strategy := default "RollingUpdate" .app.strategy -}}
 {{- $ruMaxUnavailable := 0 -}}
@@ -296,6 +309,13 @@ spec:
           {{- else if eq .type "configMap" }}
           configMap:
             name: {{ .configMapName }}
+            {{- if .items }}
+            items:
+              {{- range .items }}
+              - key: {{ .key }}
+                path: {{ .path }}
+              {{- end }}
+            {{- end }}
           {{- else if eq .type "emptyDir" }}
           emptyDir: {}
           {{- else if eq .type "secret" }}
@@ -540,6 +560,30 @@ spec:
             matchLabels:
               kubernetes.io/metadata.name: {{ .sourceNamespace }}
           {{- end }}
+      ports:
+        - port: {{ .app.port }}
+          protocol: TCP
+{{- end -}}
+
+{{- define "platform.networkpolicy.allowFromNamespace" -}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ default (printf "allow-from-%s" .sourceNamespace) .name }}
+  namespace: {{ .app.namespace }}
+  labels:
+    app: {{ .app.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .app.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .sourceNamespace }}
       ports:
         - port: {{ .app.port }}
           protocol: TCP
