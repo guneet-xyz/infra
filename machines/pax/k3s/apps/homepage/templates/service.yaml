@@ -1,14 +1,1 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.apps.homepage.appName }}
-  namespace: {{ .Values.apps.homepage.namespace }}
-  labels:
-    app: {{ .Values.apps.homepage.appName }}
-spec:
-  ports:
-    - name: http
-      port: {{ .Values.apps.homepage.port }}
-      targetPort: http
-  selector:
-    app: {{ .Values.apps.homepage.appName }}
+{{ include "platform.service" (dict "app" .Values.apps.homepage) }}

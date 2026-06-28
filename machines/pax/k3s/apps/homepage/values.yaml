@@ -5,6 +5,79 @@ apps:
 
     replicas: 1
 
+    serviceAccountName: homepage
+
+    automountServiceAccountToken: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
+
+    resources:
+      requests:
+        cpu: 25m
+        memory: 128Mi
+      limits:
+        memory: 256Mi
+
+    env:
+      - name: MY_POD_IP
+        valueFrom:
+          fieldRef:
+            fieldPath: status.podIP
+      - name: HOMEPAGE_ALLOWED_HOSTS
+        value: "$(MY_POD_IP):3000,home.guneet.xyz"
+
+    probes:
+      readiness:
+        path: /api/healthcheck
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      liveness:
+        path: /api/healthcheck
+        initialDelaySeconds: 15
+        periodSeconds: 10
+
+    ports:
+      - name: http
+        containerPort: 3000
+
+    service:
+      targetPort: http
+
+    volumes:
+      - name: config-source
+        mountPath: /config-source
+        type: configMap
+        configMapName: homepage-config
+        readOnly: true
+      - name: config
+        mountPath: /app/config
+        type: emptyDir
+
+    initContainers:
+      - name: copy-config
+        image: busybox:latest
+        command:
+          - sh
+          - -c
+          - cp /config-source/* /app/config/
+        volumeMounts:
+          - mountPath: /config-source
+            name: config-source
+            readOnly: true
+          - mountPath: /app/config
+            name: config
+
     serviceAccount:
       secrets:
         - homepage-sa-token
