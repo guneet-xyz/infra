@@ -1,12 +1,7 @@
 apps:
   registryPublic:
-    images:
-      registry:
-        image: registry
-        imageTag: "3"
-      ui:
-        image: kvqn/crui
-        imageTag: "0.7.0"
+    image: registry
+    imageTag: "3"
 
     replicas: 1
 
@@ -26,3 +21,9 @@ apps:
 
     gc:
       schedule: "0 4 * * 0"
+
+  registryPublicUi:
+    image: kvqn/crui
+    imageTag: "0.7.0"
+
+  registryPublicUiApi: {}

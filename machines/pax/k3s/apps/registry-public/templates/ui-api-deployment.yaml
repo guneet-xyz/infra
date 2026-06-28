@@ -26,7 +26,7 @@ spec:
         role: primary
       containers:
         - name: registry
-          image: "{{ .Values.apps.registryPublic.images.registry.image }}:{{ .Values.apps.registryPublic.images.registry.imageTag }}"
+          image: {{ .Values.apps.registryPublic.image }}:{{ .Values.apps.registryPublic.imageTag }}
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false

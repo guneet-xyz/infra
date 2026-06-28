@@ -26,7 +26,7 @@ spec:
         role: primary
       containers:
         - name: crui
-          image: "{{ .Values.apps.registryPublic.images.ui.image }}:{{ .Values.apps.registryPublic.images.ui.imageTag }}"
+          image: {{ .Values.apps.registryPublicUi.image }}:{{ .Values.apps.registryPublicUi.imageTag }}
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
