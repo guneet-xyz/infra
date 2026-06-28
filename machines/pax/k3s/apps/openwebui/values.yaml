@@ -1,11 +1,36 @@
 apps:
   openwebui:
-    images:
-      openwebui:
-        image: ghcr.io/open-webui/open-webui
-        imageTag: v0.9.1
+    image: ghcr.io/open-webui/open-webui
+    imageTag: v0.9.1
 
     replicas: 1
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 512Mi
+      limits:
+        memory: 2Gi
+
+    probes:
+      readiness:
+        path: /health
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        failureThreshold: 30
+      liveness:
+        path: /health
+        initialDelaySeconds: 60
+        periodSeconds: 10
+
+    volumes:
+      - name: openwebui-data
+        mountPath: /app/backend/data
+        type: pvc
+        claimName: openwebui-data
 
     claims:
       data: openwebui-data
