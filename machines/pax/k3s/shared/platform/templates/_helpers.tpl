@@ -52,6 +52,34 @@ Usage: {{ include "platform.networkpolicy.allowFromCaddy" (dict "app" .Values.ap
 Required: app.appName, app.namespace, app.port
 */}}
 
+{{/*
+=== platform.deployment — NEW optional keys in v0.2.0 ===
+  app.serviceAccountName (string; emitted as pod spec serviceAccountName),
+  app.initContainers (list; emitted as pod spec initContainers, full container spec),
+  app.envFrom (list; [{secretRef: {name: ...}} | {configMapRef: {name: ...}}]),
+  app.probes.readiness.type / app.probes.liveness.type ("httpGet" default | "tcpSocket"),
+  volumes[*].subPath (string; emitted as volumeMounts subPath),
+  volumes[*].type: "secret" → secretName, defaultMode (optional, K8s default 420)
+
+=== platform.serviceaccount ===
+Required: app.appName, app.namespace
+Optional: app.serviceAccount.secrets (list of secret names to associate)
+
+=== platform.rbac.clusterrole ===
+Required: app.appName, rules (top-level list of RBAC rule objects)
+Usage: {{ include "platform.rbac.clusterrole" (dict "app" .Values.apps.<name> "rules" .Values.apps.<name>.rbac.rules) }}
+
+=== platform.rbac.clusterrolebinding ===
+Required: app.appName, app.namespace
+Binds a ClusterRole named app.appName to a ServiceAccount named app.appName in app.namespace
+
+=== platform.cronjob ===
+Required: app.appName, app.namespace, name (suffix string), schedule (cron expression),
+          container (dict: image, imageTag, command?, args?, volumeMounts?)
+Optional: concurrencyPolicy (default "Forbid"), successfulJobsHistoryLimit (default 3),
+          failedJobsHistoryLimit (default 3), volumes (list of volume specs)
+*/}}
+
 {{- define "platform.deployment" -}}
 {{- $strategy := default "RollingUpdate" .app.strategy -}}
 apiVersion: apps/v1
@@ -86,9 +114,16 @@ spec:
     spec:
       nodeSelector:
         role: primary
+      {{- if .app.serviceAccountName }}
+      serviceAccountName: {{ .app.serviceAccountName }}
+      {{- end }}
       {{- if .app.fsGroup }}
       securityContext:
         fsGroup: {{ .app.fsGroup }}
+      {{- end }}
+      {{- if .app.initContainers }}
+      initContainers:
+        {{- toYaml .app.initContainers | nindent 8 }}
       {{- end }}
       containers:
          - name: {{ .app.appName }}
@@ -144,21 +179,35 @@ spec:
            env:
              {{- toYaml .app.env | nindent 12 }}
            {{- end }}
+           {{- if .app.envFrom }}
+           envFrom:
+             {{- toYaml .app.envFrom | nindent 12 }}
+           {{- end }}
            {{- with .app.probes }}
            {{- if .readiness }}
            readinessProbe:
+             {{- if eq (default "httpGet" .readiness.type) "tcpSocket" }}
+             tcpSocket:
+               port: {{ default $.app.port .readiness.port }}
+             {{- else }}
              httpGet:
                path: {{ .readiness.path }}
                port: {{ default $.app.port .readiness.port }}
+             {{- end }}
              initialDelaySeconds: {{ default 5 .readiness.initialDelaySeconds }}
              periodSeconds: {{ default 5 .readiness.periodSeconds }}
              failureThreshold: {{ default 3 .readiness.failureThreshold }}
            {{- end }}
            {{- if .liveness }}
            livenessProbe:
+             {{- if eq (default "httpGet" .liveness.type) "tcpSocket" }}
+             tcpSocket:
+               port: {{ default $.app.port .liveness.port }}
+             {{- else }}
              httpGet:
                path: {{ default .readiness.path .liveness.path }}
                port: {{ default $.app.port .liveness.port }}
+             {{- end }}
              initialDelaySeconds: {{ default 15 .liveness.initialDelaySeconds }}
              periodSeconds: {{ default 10 .liveness.periodSeconds }}
              failureThreshold: {{ default 3 .liveness.failureThreshold }}
@@ -169,6 +218,9 @@ spec:
              {{- range .app.volumes }}
              - name: {{ .name }}
                mountPath: {{ .mountPath }}
+               {{- if .subPath }}
+               subPath: {{ .subPath }}
+               {{- end }}
                {{- if .readOnly }}
                readOnly: true
                {{- end }}
@@ -186,6 +238,12 @@ spec:
             name: {{ .configMapName }}
           {{- else if eq .type "emptyDir" }}
           emptyDir: {}
+          {{- else if eq .type "secret" }}
+          secret:
+            secretName: {{ .secretName }}
+            {{- if .defaultMode }}
+            defaultMode: {{ .defaultMode }}
+            {{- end }}
           {{- end }}
         {{- end }}
       {{- end }}
@@ -283,4 +341,91 @@ spec:
       ports:
         - port: {{ .app.port }}
           protocol: TCP
+{{- end -}}
+
+{{- define "platform.serviceaccount" -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .app.appName }}
+  namespace: {{ .app.namespace }}
+  labels:
+    app: {{ .app.appName }}
+{{- if .app.serviceAccount }}
+{{- if .app.serviceAccount.secrets }}
+secrets:
+  {{- range .app.serviceAccount.secrets }}
+  - name: {{ . }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{- define "platform.rbac.clusterrole" -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .app.appName }}
+  labels:
+    app: {{ .app.appName }}
+rules:
+  {{- toYaml .rules | nindent 2 }}
+{{- end -}}
+
+{{- define "platform.rbac.clusterrolebinding" -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .app.appName }}
+  labels:
+    app: {{ .app.appName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .app.appName }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .app.appName }}
+    namespace: {{ .app.namespace }}
+{{- end -}}
+
+{{- define "platform.cronjob" -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .app.appName }}-{{ .name }}
+  namespace: {{ .app.namespace }}
+  labels:
+    app: {{ .app.appName }}
+spec:
+  schedule: {{ .schedule | quote }}
+  concurrencyPolicy: {{ default "Forbid" .concurrencyPolicy }}
+  successfulJobsHistoryLimit: {{ default 3 .successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ default 3 .failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            role: primary
+          restartPolicy: OnFailure
+          containers:
+            - name: {{ .name }}
+              image: {{ .container.image }}:{{ .container.imageTag }}
+              {{- with .container.command }}
+              command:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .container.args }}
+              args:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .container.volumeMounts }}
+              volumeMounts:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+          {{- with .volumes }}
+          volumes:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 {{- end -}}
