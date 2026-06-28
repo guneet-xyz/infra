@@ -34,6 +34,42 @@ Each subdirectory under `apps/` is a Helm chart. Subdirectories under
 `shared/` are library charts that cannot be installed directly; they
 provide reusable named templates that app charts depend on.
 
+## App-level context
+
+Most apps in `apps/` follow the standard k3s and Helm conventions described
+in this file (chart structure, values layout, networking, secrets, backups)
+and need no special context beyond it. When you touch one of those charts,
+this file is the only context you need.
+
+A small set of apps have behavior that is not captured by the general
+conventions: cluster-wide networking, unusual secrets, host networking,
+upstream chart wrappers, or admin surfaces. Those apps have their own
+`AGENTS.md` next to the chart. Read it whenever you are touching that
+chart's templates, values, or secrets.
+
+Current unusual apps with chart-local context:
+
+- `apps/caddy/AGENTS.md` — public/private routing, TLS, registry auth,
+  Matrix well-known
+- `apps/plane/AGENTS.md` — upstream chart, multi-service, special secrets
+  and upgrade flow
+- `apps/synapse/AGENTS.md` — Matrix federation, IMMUTABLE signing key,
+  TURN coupling
+- `apps/coturn/AGENTS.md` — host networking, host ports, Synapse
+  `TURN_SHARED_SECRET` coupling
+- `apps/tailscale/AGENTS.md` — upstream operator, subnet routing,
+  cluster-wide networking
+- `apps/infisical/AGENTS.md` — multi-component app, SMTP, encryption key
+  safety
+- `apps/honcho/AGENTS.md` — pgvector, deriver worker, LiteLLM coupling,
+  psycopg3
+- `apps/portainer/AGENTS.md` — cluster-admin RBAC, admin surface safety
+
+App-level `AGENTS.md` files are the current deliverable. Broader cleanup,
+README consolidation, splitting this file into focused docs under `docs/`,
+the `apps.yaml` app catalog, and chart refactors are future work tracked in
+`docs/repository-simplification-roadmap.md` and are not in scope right now.
+
 ## Using kubolt
 
 `kubolt` is the Go CLI for day-to-day cluster management. It wraps Helm with
