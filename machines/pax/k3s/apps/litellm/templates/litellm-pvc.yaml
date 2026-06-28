@@ -1,13 +1,1 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.apps.litellm.claims.data }}
-  namespace: {{ .Values.apps.litellm.namespace }}
-  labels:
-    app: {{ .Values.apps.litellm.appName }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.apps.litellm.storage.data }}
+{{ include "platform.pvc" (dict "app" .Values.apps.litellm "name" .Values.apps.litellm.claims.data "storage" .Values.apps.litellm.storage.data) }}

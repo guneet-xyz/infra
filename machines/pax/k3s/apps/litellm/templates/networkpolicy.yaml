@@ -1,15 +1,4 @@
-# Default deny all ingress
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: default-deny-ingress
-  namespace: {{ .Values.apps.litellm.namespace }}
-  labels:
-    app: {{ .Values.apps.litellm.appName }}
-spec:
-  podSelector: {}
-  policyTypes:
-    - Ingress
+{{ include "platform.networkpolicy.defaultDeny" (dict "app" .Values.apps.litellm) }}
 ---
 # Allow private Caddy to reach LiteLLM (tailscale-only route)
 apiVersion: networking.k8s.io/v1
@@ -37,30 +26,11 @@ spec:
         - port: {{ .Values.apps.litellm.port }}
           protocol: TCP
 ---
-# Allow Open WebUI to reach LiteLLM (direct cluster DNS)
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-from-openwebui
-  namespace: {{ .Values.apps.litellm.namespace }}
-  labels:
-    app: {{ .Values.apps.litellm.appName }}
-spec:
-  podSelector:
-    matchLabels:
-      app: {{ .Values.apps.litellm.appName }}
-  policyTypes:
-    - Ingress
-  ingress:
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: {{ .Values.apps.openwebui.namespace }}
-      ports:
-        - port: {{ .Values.apps.litellm.port }}
-          protocol: TCP
+{{ include "platform.networkpolicy.allowFromNamespace" (dict "app" .Values.apps.litellm "sourceNamespace" .Values.apps.openwebui.namespace "name" "allow-from-openwebui") }}
 ---
-# Allow LiteLLM app to reach its Postgres
+{{ include "platform.networkpolicy.allowFromNamespace" (dict "app" .Values.apps.litellm "sourceNamespace" .Values.apps.honcho.namespace "name" "allow-from-honcho") }}
+---
+# Allow LiteLLM app to reach its Postgres (intra-namespace; library has no define for postgres-targeting NPs)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -75,33 +45,10 @@ spec:
   policyTypes:
     - Ingress
   ingress:
-     - from:
-         - podSelector:
-             matchLabels:
-               app: {{ .Values.apps.litellm.appName }}
-       ports:
-         - port: {{ .Values.apps.litellm.postgres.port }}
-           protocol: TCP
----
-# Allow Honcho to reach LiteLLM (LLM routing)
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-from-honcho
-  namespace: {{ .Values.apps.litellm.namespace }}
-  labels:
-    app: {{ .Values.apps.litellm.appName }}
-spec:
-  podSelector:
-    matchLabels:
-      app: {{ .Values.apps.litellm.appName }}
-  policyTypes:
-    - Ingress
-  ingress:
     - from:
-        - namespaceSelector:
+        - podSelector:
             matchLabels:
-              kubernetes.io/metadata.name: {{ .Values.apps.honcho.namespace }}
+              app: {{ .Values.apps.litellm.appName }}
       ports:
-        - port: {{ .Values.apps.litellm.port }}
+        - port: {{ .Values.apps.litellm.postgres.port }}
           protocol: TCP

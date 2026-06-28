@@ -1,14 +1,43 @@
 apps:
   litellm:
+    image: ghcr.io/berriai/litellm
+    imageTag: v1.83.7-stable
+
     images:
-      litellm:
-        image: ghcr.io/berriai/litellm
-        imageTag: v1.83.7-stable
       postgres:
         image: postgres
         imageTag: "17.9"
 
     replicas: 1
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 512Mi
+      limits:
+        memory: 2Gi
+
+    args:
+      - --config
+      - /config/config.yml
+
+    envFrom:
+      - secretRef:
+          name: app-secret
+
+    probes:
+      readiness:
+        path: /health/readiness
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        failureThreshold: 30
+      liveness:
+        path: /health/liveliness
+        initialDelaySeconds: 60
+        periodSeconds: 10
 
     configMaps:
       config: litellm-config
@@ -16,6 +45,20 @@ apps:
     claims:
       data: litellm-data
       postgresData: litellm-postgres-data
+
+    volumes:
+      - name: config
+        mountPath: /config/config.yml
+        subPath: config.yml
+        type: configMap
+        configMapName: litellm-config
+        items:
+          - key: config.yml
+            path: config.yml
+      - name: litellm-data
+        mountPath: /root/.config/litellm
+        type: pvc
+        claimName: litellm-data
 
     postgres:
       serviceName: litellm-postgres
