@@ -2,25 +2,7 @@
 
 Wallpaper sharing platform. Deploys the walls app with its own PostgreSQL database.
 
-## Install
-
-From the `machines/pax/k3s/` directory:
-
-```sh
-kubolt install walls
-```
-
-## Upgrade
-
-```sh
-kubolt install walls
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall walls
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Access
 

@@ -3,25 +3,7 @@
 Kubernetes dashboard. Deployed as an umbrella chart using the official
 [Headlamp Helm chart](https://github.com/kubernetes-sigs/headlamp).
 
-## Install
-
-From the `machines/pax/k3s/` directory:
-
-```sh
-kubolt install headlamp
-```
-
-## Upgrade
-
-```sh
-kubolt install headlamp
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall headlamp
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Get Login Token
 

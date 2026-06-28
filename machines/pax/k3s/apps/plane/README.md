@@ -15,6 +15,8 @@ dependency on `plane-ce@1.5.1` from https://helm.plane.so/.
 
 `https://plane.guneet.xyz`
 
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
+
 ## Prerequisites
 
 - DNS: `plane.guneet.xyz` CNAME → `pax.ts.guneet.xyz`, resolving to the
@@ -28,21 +30,6 @@ dependency on `plane-ce@1.5.1` from https://helm.plane.so/.
   - `PLANE_POSTGRES_PASSWORD` → postgres database password
   - `PLANE_RABBITMQ_PASSWORD` → rabbitmq default user password
   - `PLANE_MINIO_ROOT_PASSWORD` → minio root password
-
-## Deploy
-
-From `machines/pax/k3s/`:
-
-```sh
-kubolt apply plane
-```
-
-## Upgrade
-
-1. Bump `version:` in `Chart.yaml`.
-2. Run `helm dependency update apps/plane`.
-3. Commit the new `charts/*.tgz` and `Chart.lock`.
-4. Run `kubolt apply plane`.
 
 ## Backup
 

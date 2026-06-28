@@ -7,25 +7,7 @@ local port 3000 available at `https://demo.guneet.dev`.
 Uses [linuxserver/openssh-server](https://hub.docker.com/r/linuxserver/openssh-server)
 with the Tailscale operator exposing SSH as hostname `demo` on the Tailnet.
 
-## Install
-
-From the `machines/pax/k3s/` directory:
-
-```sh
-kubolt install demo
-```
-
-## Upgrade
-
-```sh
-kubolt install demo
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall demo
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Usage
 

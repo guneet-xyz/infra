@@ -5,25 +5,7 @@ Self-hosted Go server serving an embedded web bundle.
 
 Upstream: https://github.com/ZenNotes/zennotes
 
-## Install
-
-From the `machines/pax/k3s/` directory:
-
-```sh
-kubolt install zennotes
-```
-
-## Upgrade
-
-```sh
-kubolt install zennotes
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall zennotes
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Access
 

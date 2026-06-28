@@ -2,25 +2,7 @@
 
 Development PostgreSQL database + pgui web UI. Used as a scratch database for experimentation and ad-hoc queries.
 
-## Install
-
-From the `machines/pax/k3s/` directory:
-
-```sh
-kubolt install dev-db
-```
-
-## Upgrade
-
-```sh
-kubolt install dev-db
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall dev-db
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Access
 
@@ -61,4 +43,4 @@ PVC `dev-db-postgres-data` is included in `kubolt.yaml`:
 kubolt backup --dir ./backups dev-db
 ```
 
-See the top-level `AGENTS.md` for the full backup workflow.
+For the full backup workflow, see [`../../docs/backup.md`](../../docs/backup.md).

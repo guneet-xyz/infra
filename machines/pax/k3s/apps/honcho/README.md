@@ -4,25 +4,7 @@
 workspace/peer/session/message hierarchy for storing and retrieving
 conversational context for AI agents.
 
-## Install
-
-From the `machines/pax/k3s/` directory:
-
-```sh
-kubolt install honcho
-```
-
-## Upgrade
-
-```sh
-kubolt install honcho
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall honcho
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Access
 

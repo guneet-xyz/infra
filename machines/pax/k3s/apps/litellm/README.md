@@ -4,25 +4,7 @@ LiteLLM proxy — unified API gateway for LLM providers. Chat routes through
 GitHub Copilot models; embeddings route through GitHub Models. Backed by its
 own PostgreSQL database.
 
-## Install
-
-From the `machines/pax/k3s/` directory:
-
-```sh
-kubolt install litellm
-```
-
-## Upgrade
-
-```sh
-kubolt install litellm
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall litellm
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Access
 

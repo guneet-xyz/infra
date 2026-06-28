@@ -8,25 +8,7 @@ Unified reverse proxy chart with public and private instances.
 Both instances share a single Cloudflare API token and a shared PVC for
 TLS certificate cache.
 
-## Install
-
-From the `machines/pax/k3s/` directory:
-
-```sh
-kubolt install caddy
-```
-
-## Upgrade
-
-```sh
-kubolt install caddy
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall caddy
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Routes
 

@@ -4,25 +4,7 @@ ntfy — pub-sub notification service. Tailscale-only.
 
 Upstream: https://ntfy.sh
 
-## Install
-
-From the `machines/pax/k3s/` directory:
-
-```sh
-kubolt install ntfy
-```
-
-## Upgrade
-
-```sh
-kubolt install ntfy
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall ntfy
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Access
 

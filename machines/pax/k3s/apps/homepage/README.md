@@ -4,25 +4,7 @@ Dashboard for all services on pax, powered by
 [Homepage](https://gethomepage.dev). Available at `home.guneet.xyz`
 (private, Tailscale only).
 
-## Install
-
-From the `machines/pax/k3s/` directory:
-
-```sh
-kubolt install homepage
-```
-
-## Upgrade
-
-```sh
-kubolt install homepage
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall homepage
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Configuration
 

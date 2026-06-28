@@ -7,27 +7,7 @@ Self-hosted Matrix homeserver ([Synapse](https://github.com/element-hq/synapse))
 - **Federation**: enabled, open (all servers), via `:443` + `/.well-known/matrix/server` delegation
 - **Registration**: closed; new users join via Admin-API-generated invite tokens
 
-## Install
-
-From `machines/pax/k3s/`:
-
-```sh
-kubolt install synapse
-```
-
-After install, [create the initial admin user](#initial-admin-user).
-
-## Upgrade
-
-```sh
-kubolt install synapse
-```
-
-## Uninstall
-
-```sh
-kubolt uninstall synapse
-```
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
 
 ## Access
 

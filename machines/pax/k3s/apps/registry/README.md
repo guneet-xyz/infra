@@ -6,9 +6,11 @@ Self-hosted Docker Distribution (registry:3) with [CRUI](https://github.com/kvqn
 
 - `cr.guneet.xyz` — private (Tailscale), `/v2/*` routes to registry API, everything else to CRUI
 
+> For install/upgrade/uninstall and backup commands, see [`../../docs/operations.md`](../../docs/operations.md) and [`../../docs/backup.md`](../../docs/backup.md).
+
 ## Obscuro Secrets
 
-Before installing, store these secrets with `obscuro set`:
+Store these secrets with `obscuro set`:
 
 | Key | Description |
 |---|---|
@@ -16,12 +18,6 @@ Before installing, store these secrets with `obscuro set`:
 | `REGISTRY_USERNAME` | Username for CRUI to authenticate with registry API |
 | `REGISTRY_PASSWORD` | Password for CRUI to authenticate with registry API |
 | `REGISTRY_SESSION_SECRET` | Random string for CRUI session signing |
-
-## Install
-
-```sh
-kubolt install registry
-```
 
 ## Backup
 
