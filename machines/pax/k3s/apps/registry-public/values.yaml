@@ -7,6 +7,50 @@ apps:
 
     domain: cr.guneet.dev
 
+    imagePullPolicy: IfNotPresent
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 1
+        maxSurge: 0
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    resources:
+      requests:
+        cpu: 25m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+    env:
+      - name: OTEL_TRACES_EXPORTER
+        value: none
+
+    probes:
+      readiness:
+        type: tcpSocket
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      liveness:
+        type: tcpSocket
+        initialDelaySeconds: 15
+        periodSeconds: 10
+
+    volumes:
+      - name: registry-data
+        mountPath: /var/lib/registry
+        type: pvc
+        claimName: registry-public-data
+      - name: registry-config
+        mountPath: /etc/distribution/config.yml
+        subPath: config.yml
+        type: configMap
+        configMapName: registry-public-config
+        readOnly: true
+
     storage: 10Gi
 
     claims:
@@ -21,9 +65,116 @@ apps:
 
     gc:
       schedule: "0 4 * * 0"
+      container:
+        image: registry
+        imageTag: "3"
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+        command:
+          - /bin/registry
+          - garbage-collect
+          - /etc/docker/registry/config.yml
+        volumeMounts:
+          - mountPath: /var/lib/registry
+            name: registry-data
+          - mountPath: /etc/docker/registry/config.yml
+            name: registry-config
+            subPath: config.yml
+            readOnly: true
+      volumes:
+        - name: registry-data
+          persistentVolumeClaim:
+            claimName: registry-public-data
+        - name: registry-config
+          configMap:
+            name: registry-public-config
 
   registryPublicUi:
     image: kvqn/crui
     imageTag: "0.7.0"
 
-  registryPublicUiApi: {}
+    imagePullPolicy: IfNotPresent
+
+    replicas: 1
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        memory: 128Mi
+
+    env:
+      - name: REGISTRY_URL
+        value: http://registry-public-ui-api:5000
+      - name: DISPLAY_REGISTRY_URL
+        value: cr.guneet.dev
+
+    envFrom:
+      - secretRef:
+          name: registry-public-ui-secret
+
+    probes:
+      readiness:
+        path: /
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      liveness:
+        path: /
+        initialDelaySeconds: 15
+        periodSeconds: 10
+
+  registryPublicUiApi:
+    image: registry
+    imageTag: "3"
+
+    imagePullPolicy: IfNotPresent
+
+    replicas: 1
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    resources:
+      requests:
+        cpu: 25m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+    env:
+      - name: OTEL_TRACES_EXPORTER
+        value: none
+
+    probes:
+      readiness:
+        type: tcpSocket
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      liveness:
+        type: tcpSocket
+        initialDelaySeconds: 15
+        periodSeconds: 10
+
+    volumes:
+      - name: registry-data
+        mountPath: /var/lib/registry
+        type: pvc
+        claimName: registry-public-data
+        readOnly: true
+      - name: ui-api-config
+        mountPath: /etc/distribution/config.yml
+        subPath: config.yml
+        type: configMap
+        configMapName: registry-public-ui-api-config
+        readOnly: true

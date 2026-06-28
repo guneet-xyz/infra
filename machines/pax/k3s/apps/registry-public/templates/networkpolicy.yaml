@@ -1,15 +1,4 @@
-# Default deny all ingress
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: default-deny-ingress
-  namespace: {{ .Values.apps.registryPublic.namespace }}
-  labels:
-    app: {{ .Values.apps.registryPublic.appName }}
-spec:
-  podSelector: {}
-  policyTypes:
-    - Ingress
+{{ include "platform.networkpolicy.defaultDeny" (dict "app" .Values.apps.registryPublic) }}
 ---
 # Allow Caddy to reach registry and UI
 apiVersion: networking.k8s.io/v1
@@ -56,4 +45,3 @@ spec:
       ports:
         - port: {{ .Values.apps.registryPublicUiApi.port }}
           protocol: TCP
-
