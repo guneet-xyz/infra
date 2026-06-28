@@ -128,52 +128,52 @@ spec:
             {{- else }}
             allowPrivilegeEscalation: false
             {{- end }}
-          resources:
-            requests:
-              cpu: {{ .app.resources.requests.cpu }}
-              memory: {{ .app.resources.requests.memory }}
-            limits:
-              {{- if .app.resources.limits.cpu }}
-              cpu: {{ .app.resources.limits.cpu }}
-              {{- end }}
-              memory: {{ .app.resources.limits.memory }}
-          ports:
-            - containerPort: {{ .app.port }}
-              protocol: TCP
-          {{- if .app.env }}
-          env:
-            {{- toYaml .app.env | nindent 12 }}
-          {{- end }}
-          {{- with .app.probes }}
-          {{- if .readiness }}
-          readinessProbe:
-            httpGet:
-              path: {{ .readiness.path }}
-              port: {{ default $.app.port .readiness.port }}
-            initialDelaySeconds: {{ default 5 .readiness.initialDelaySeconds }}
-            periodSeconds: {{ default 5 .readiness.periodSeconds }}
-            failureThreshold: {{ default 3 .readiness.failureThreshold }}
-          {{- end }}
-          {{- if .liveness }}
-          livenessProbe:
-            httpGet:
-              path: {{ default .readiness.path .liveness.path }}
-              port: {{ default $.app.port .liveness.port }}
-            initialDelaySeconds: {{ default 15 .liveness.initialDelaySeconds }}
-            periodSeconds: {{ default 10 .liveness.periodSeconds }}
-            failureThreshold: {{ default 3 .liveness.failureThreshold }}
-          {{- end }}
-          {{- end }}
-          {{- if .app.volumes }}
-          volumeMounts:
-            {{- range .app.volumes }}
-            - name: {{ .name }}
-              mountPath: {{ .mountPath }}
-              {{- if .readOnly }}
-              readOnly: true
-              {{- end }}
-            {{- end }}
-          {{- end }}
+           resources:
+             requests:
+               cpu: {{ .app.resources.requests.cpu }}
+               memory: {{ .app.resources.requests.memory }}
+             limits:
+               {{- if .app.resources.limits.cpu }}
+               cpu: {{ .app.resources.limits.cpu }}
+               {{- end }}
+               memory: {{ .app.resources.limits.memory }}
+           ports:
+             - containerPort: {{ .app.port }}
+               protocol: TCP
+           {{- if .app.env }}
+           env:
+             {{- toYaml .app.env | nindent 12 }}
+           {{- end }}
+           {{- with .app.probes }}
+           {{- if .readiness }}
+           readinessProbe:
+             httpGet:
+               path: {{ .readiness.path }}
+               port: {{ default $.app.port .readiness.port }}
+             initialDelaySeconds: {{ default 5 .readiness.initialDelaySeconds }}
+             periodSeconds: {{ default 5 .readiness.periodSeconds }}
+             failureThreshold: {{ default 3 .readiness.failureThreshold }}
+           {{- end }}
+           {{- if .liveness }}
+           livenessProbe:
+             httpGet:
+               path: {{ default .readiness.path .liveness.path }}
+               port: {{ default $.app.port .liveness.port }}
+             initialDelaySeconds: {{ default 15 .liveness.initialDelaySeconds }}
+             periodSeconds: {{ default 10 .liveness.periodSeconds }}
+             failureThreshold: {{ default 3 .liveness.failureThreshold }}
+           {{- end }}
+           {{- end }}
+           {{- if .app.volumes }}
+           volumeMounts:
+             {{- range .app.volumes }}
+             - name: {{ .name }}
+               mountPath: {{ .mountPath }}
+               {{- if .readOnly }}
+               readOnly: true
+               {{- end }}
+             {{- end }}
+           {{- end }}
       {{- if .app.volumes }}
       volumes:
         {{- range .app.volumes }}
