@@ -3,10 +3,10 @@ name: Validate Helm Charts
 on:
   push:
     paths:
-      - "clusters/pax/**"
+      - "machines/pax/k3s/**"
   pull_request:
     paths:
-      - "clusters/pax/**"
+      - "machines/pax/k3s/**"
 
 jobs:
   validate:
@@ -23,5 +23,5 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Validate charts
-        working-directory: clusters/pax
+        working-directory: machines/pax/k3s
         run: kubolt validate

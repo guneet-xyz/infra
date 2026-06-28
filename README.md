@@ -1,29 +1,39 @@
 # infra
 
-Infrastructure repo organized by Kubernetes cluster.
+Infrastructure repo organized by machine. Each machine can own one or more
+infra stacks, such as k3s, Docker Compose, host services, or provisioning
+assets.
 
 ## Layout
 
 ```
-clusters/
-  pax/                  # k3s single-node cluster
-    apps/               # Helm charts (13 apps)
-    shared/             # Helm library charts
-    plugins/            # Helm post-renderers (obscuro for secrets)
-    values-shared.yaml
-    kubolt.yaml          # kubolt app/dependency/backup manifest
-    AGENTS.md           # cluster-specific docs
+machines/
+  pax/                  # machine-specific infra for host `pax`
+    AGENTS.md           # machine-level context
+    README.md           # machine overview
+    k3s/                # k3s stack running on pax
+      apps/             # Helm charts
+      shared/           # Helm library charts
+      plugins/          # Helm post-renderers (obscuro for secrets)
+      values-shared.yaml
+      kubolt.yaml       # kubolt app/dependency/backup manifest
+      AGENTS.md         # k3s stack docs
 ```
 
-Secrets config (`.obscuro/`) lives at the repo root so it's shared across clusters.
+Secrets config (`.obscuro/`) lives at the repo root so it can be shared across
+machines and stacks.
 
-## Adding a new cluster
+## Adding a new machine or stack
 
-Add a sibling `clusters/<name>/` directory mirroring the `pax/` structure.
+Add a sibling `machines/<name>/` directory for a new host. Inside a machine,
+add stack directories as needed, for example `k3s/`, `compose/`, `host/`, or
+`terraform/`.
 
 ## Operating `pax`
 
-See [`clusters/pax/AGENTS.md`](clusters/pax/AGENTS.md) for deploy, backup, and operate instructions.
+See [`machines/pax/README.md`](machines/pax/README.md) for the machine overview
+and [`machines/pax/k3s/AGENTS.md`](machines/pax/k3s/AGENTS.md) for k3s deploy,
+backup, and operate instructions.
 
 ## Tooling
 
