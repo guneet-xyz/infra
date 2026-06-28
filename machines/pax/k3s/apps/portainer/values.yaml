@@ -5,6 +5,40 @@ apps:
 
     replicas: 1
 
+    serviceAccountName: portainer
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 1
+        maxSurge: 0
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    resources:
+      requests:
+        cpu: 25m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+    probes:
+      readiness:
+        type: tcpSocket
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      liveness:
+        type: tcpSocket
+        initialDelaySeconds: 15
+        periodSeconds: 10
+
+    volumes:
+      - name: data
+        mountPath: /data
+        type: pvc
+        claimName: portainer-data
+
     rbac:
       rules:
         - apiGroups: ["*"]
