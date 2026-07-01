@@ -35,7 +35,6 @@ kubolt uninstall caddy
 | Domain | Backend |
 |---|---|
 | `walls.guneet.dev` | walls |
-| `llm.guneet.dev` | litellm |
 
 ### Private (`*.guneet.xyz`)
 
