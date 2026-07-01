@@ -21,7 +21,7 @@ data:
             description: Custom application
         - LiteLLM:
             icon: si-openai
-            href: https://llm.guneet.dev
+            href: https://llm.guneet.xyz
             description: LLM proxy/gateway
         - Open WebUI:
             icon: si-openai
