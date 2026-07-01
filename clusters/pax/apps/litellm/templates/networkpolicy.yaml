@@ -11,7 +11,7 @@ spec:
   policyTypes:
     - Ingress
 ---
-# Allow Caddy to reach LiteLLM (public + private routes)
+# Allow private Caddy to reach LiteLLM (tailscale-only route)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -30,6 +30,9 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: {{ .Values.apps.caddy.namespace }}
+          podSelector:
+            matchLabels:
+              app: {{ printf "%s-private" .Values.apps.caddy.appName | quote }}
       ports:
         - port: {{ .Values.apps.litellm.port }}
           protocol: TCP

@@ -26,8 +26,7 @@ kubolt uninstall litellm
 
 ## Access
 
-- Public: `https://llm.guneet.dev`
-- Private: `https://llm.guneet.xyz`
+- Private only: `https://llm.guneet.xyz` (Tailscale)
 
 ## Models
 
