@@ -18,6 +18,12 @@ machines/
       values-shared.yaml
       kubolt.yaml       # kubolt app/dependency/backup manifest
       AGENTS.md         # k3s stack docs
+  thinkcentre/          # machine-specific infra for host `thinkcentre`
+    AGENTS.md           # machine-level context
+    README.md           # machine overview
+    compose/            # Docker Compose stacks running on thinkcentre
+      AGENTS.md         # compose stack conventions
+      easyshell-runner/ # easyshell runner stack
 ```
 
 Secrets config (`.obscuro/`) lives at the repo root so it can be shared across
@@ -35,11 +41,18 @@ See [`machines/pax/README.md`](machines/pax/README.md) for the machine overview
 and [`machines/pax/k3s/AGENTS.md`](machines/pax/k3s/AGENTS.md) for k3s deploy,
 backup, and operate instructions.
 
+## Operating `thinkcentre`
+
+See [`machines/thinkcentre/README.md`](machines/thinkcentre/README.md) for the machine overview
+and [`machines/thinkcentre/compose/AGENTS.md`](machines/thinkcentre/compose/AGENTS.md) for compose
+stack conventions.
+
 ## Tooling
 
 k3s + Helm + [obscuro](https://github.com/janklabs/obscuro) for secrets.
 
 - [kubolt](https://github.com/guneet-xyz/kubolt), Go CLI that wraps Helm for day-to-day cluster management (install, uninstall, validate, list, backup). Install with `curl -sSL https://raw.githubusercontent.com/guneet-xyz/kubolt/main/install.sh | sh`.
+- Docker Compose + [obscuro](https://github.com/janklabs/obscuro) `inject` for host-Docker workloads on thinkcentre.
 
 ## Helm plugin caveat
 

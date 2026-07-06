@@ -23,3 +23,9 @@ kubolt backup --dir ./backups <app>
 ```
 
 See [`k3s/AGENTS.md`](k3s/AGENTS.md) for the full k3s stack conventions.
+
+## Other machines
+
+See [`../thinkcentre/README.md`](../thinkcentre/README.md) for the
+`thinkcentre` machine, which runs Docker Compose stacks (currently the
+easyshell runner).
