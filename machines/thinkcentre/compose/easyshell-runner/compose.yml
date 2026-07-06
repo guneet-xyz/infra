@@ -1,0 +1,28 @@
+networks:
+  easyshell:
+    external: true
+
+services:
+  runner:
+    image: cr.guneet.xyz/easyshell/runner:latest
+    container_name: easyshell-runner
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - easyshell
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/easyshell:/tmp/easyshell
+      - runner-data:/var/lib/easyshell-runner
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "wget -q --spider http://localhost:4200 2>/dev/null || exit 0"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  runner-data:
