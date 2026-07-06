@@ -1,4 +1,6 @@
 {
-  "salt": "gBiYTQ9CQusYjHXUDZapXg==",
-  "verification_token": "NI+14dTtg5xMWoM6oxHQCXhxfQBN1otku6XK+RR0aKZWiN/0zS1pgFjV"
+  "salt": "d1vB0rKa2oCDAXT/klFT4Q==",
+  "verification_token": "T3XPw6iIeCq+Iity335L4CMNWMUCH7iLKcwHgJEoYandFaVnat5tDkiX",
+  "schema_version": 2,
+  "password_backend": "file"
 }
