@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.easyshell.appName }}
+  namespace: {{ .Values.apps.easyshell.namespace }}
+  labels:
+    app: {{ .Values.apps.easyshell.appName }}
+spec:
+  replicas: {{ .Values.apps.easyshell.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.easyshell.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.easyshell.appName }}
+      annotations:
+        checksum/website-secret: {{ include (print $.Template.BasePath "/website-secret.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      imagePullSecrets:
+        - name: registry-pull-secret
+      containers:
+        - name: website
+          image: {{ .Values.apps.easyshell.image }}:{{ .Values.apps.easyshell.imageTag }}
+          imagePullPolicy: {{ .Values.apps.easyshell.imagePullPolicy | default "Always" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: {{ .Values.apps.easyshell.resources.requests.cpu }}
+              memory: {{ .Values.apps.easyshell.resources.requests.memory }}
+            limits:
+              memory: {{ .Values.apps.easyshell.resources.limits.memory }}
+          ports:
+            - containerPort: {{ .Values.apps.easyshell.port }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: website-secret
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.apps.easyshell.probes.readiness.path }}
+              port: {{ .Values.apps.easyshell.port }}
+            initialDelaySeconds: {{ .Values.apps.easyshell.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.apps.easyshell.probes.readiness.periodSeconds }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.apps.easyshell.probes.liveness.path }}
+              port: {{ .Values.apps.easyshell.port }}
+            initialDelaySeconds: {{ .Values.apps.easyshell.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.apps.easyshell.probes.liveness.periodSeconds }}
