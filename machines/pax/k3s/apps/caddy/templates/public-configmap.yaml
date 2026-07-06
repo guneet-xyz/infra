@@ -20,6 +20,10 @@ data:
     	reverse_proxy {{ .Values.apps.walls.appName }}.{{ .Values.apps.walls.namespace }}.svc.cluster.local:{{ .Values.apps.walls.port }}
     }
     
+    easyshell.sh {
+    	reverse_proxy {{ .Values.apps.easyshell.appName }}.{{ .Values.apps.easyshell.namespace }}.svc.cluster.local:{{ .Values.apps.easyshell.port }}
+    }
+    
     infisical.guneet.dev {
     	reverse_proxy {{ .Values.apps.infisical.appName }}.{{ .Values.apps.infisical.namespace }}.svc.cluster.local:{{ .Values.apps.infisical.port }}
     }

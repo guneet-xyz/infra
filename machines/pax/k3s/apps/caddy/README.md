@@ -17,6 +17,7 @@ TLS certificate cache.
 | Domain | Backend |
 |---|---|
 | `walls.guneet.dev` | walls |
+| easyshell.sh | easyshell |
 
 ### Private (`*.guneet.xyz`)
 
@@ -28,6 +29,7 @@ TLS certificate cache.
 | `db.guneet.xyz` | dev-db (HTTP→pgui, TCP/5432→postgres) |
 | `notes.guneet.xyz` | zennotes |
 | `ntfy.guneet.xyz` | ntfy |
+| coordinator.easyshell.sh | easyshell-coordinator |
 
 ## Migration from caddy-public
 

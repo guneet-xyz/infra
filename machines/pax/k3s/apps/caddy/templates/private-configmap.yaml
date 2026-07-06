@@ -42,6 +42,10 @@ data:
     	reverse_proxy {{ .Values.apps.registryUi.appName }}.{{ .Values.apps.registryUi.namespace }}.svc.cluster.local:{{ .Values.apps.registryUi.port }}
     }
 
+    coordinator.easyshell.sh {
+    	reverse_proxy {{ .Values.apps.easyshellCoordinator.appName }}.{{ .Values.apps.easyshellCoordinator.namespace }}.svc.cluster.local:{{ .Values.apps.easyshellCoordinator.port }}
+    }
+
     portainer.guneet.xyz {
     	reverse_proxy {{ .Values.apps.portainer.appName }}.{{ .Values.apps.portainer.namespace }}.svc.cluster.local:{{ .Values.apps.portainer.port }}
     }
