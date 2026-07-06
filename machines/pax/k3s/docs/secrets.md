@@ -89,6 +89,22 @@ Helm values.
 | `SYNAPSE_MACAROON_SECRET_KEY` | synapse (access token issuance) |
 | `SYNAPSE_FORM_SECRET` | synapse (form CSRF) |
 | `TURN_SHARED_SECRET` | coturn (shared secret for TURN ↔ Synapse authentication) |
+| `EASYSHELL_POSTGRES_PASSWORD` | easyshell (postgres) |
+| `EASYSHELL_NEXTAUTH_SECRET` | easyshell (website) |
+| `EASYSHELL_DISCORD_CLIENT_ID` | easyshell (website) |
+| `EASYSHELL_DISCORD_CLIENT_SECRET` | easyshell (website) |
+| `EASYSHELL_GITHUB_CLIENT_ID` | easyshell (website) |
+| `EASYSHELL_GITHUB_CLIENT_SECRET` | easyshell (website) |
+| `EASYSHELL_GOOGLE_CLIENT_ID` | easyshell (website) |
+| `EASYSHELL_GOOGLE_CLIENT_SECRET` | easyshell (website) |
+| `EASYSHELL_COORDINATOR_TOKEN` | easyshell (website ↔ coordinator shared) |
+| `EASYSHELL_COORDINATOR_REGISTRATION_TOKEN` | easyshell (coordinator ↔ thinkcentre runner shared) |
+| `EASYSHELL_COORDINATOR_SECRET_KEY` | easyshell (coordinator AES-GCM for runner secret storage; IMMUTABLE — see chart README) |
+| `EASYSHELL_RUNNER_ID` | thinkcentre easyshell-runner (bootstrap-generated) |
+| `EASYSHELL_RUNNER_SECRET` | thinkcentre easyshell-runner (bootstrap-generated) |
+| `EASYSHELL_POSTHOG_HOST` | easyshell (website) |
+| `EASYSHELL_POSTHOG_KEY` | easyshell (website; NEXT_PUBLIC_POSTHOG_KEY at runtime) |
+| `EASYSHELL_REGISTRY_DOCKERCONFIG_JSON` | easyshell (namespace-local imagePullSecret for cr.guneet.xyz; generate with `kubectl create secret docker-registry --dry-run=client -o jsonpath='{.data.\.dockerconfigjson}' | base64 -d` — see chart README) |
 
 ## Shared SMTP Config
 
