@@ -1,0 +1,74 @@
+{{ include "platform.networkpolicy.defaultDeny" (dict "app" .Values.apps.easyshell) }}
+---
+{{ include "platform.networkpolicy.allowFromCaddy" (dict "app" .Values.apps.easyshell "caddy" .Values.apps.caddy) }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-caddy-coordinator
+  namespace: {{ .Values.apps.easyshellCoordinator.namespace }}
+  labels:
+    app: {{ .Values.apps.easyshellCoordinator.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.easyshellCoordinator.appName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.apps.caddy.namespace }}
+      ports:
+        - port: {{ .Values.apps.easyshellCoordinator.port }}
+          protocol: TCP
+---
+{{ include "platform.networkpolicy.allowFromPodSelector" (dict "app" .Values.apps.easyshellCoordinator "sourcePodSelector" (dict "matchLabels" (dict "app" .Values.apps.easyshell.appName)) "name" "allow-from-website") }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres
+  namespace: {{ .Values.apps.easyshell.namespace }}
+  labels:
+    app: {{ .Values.apps.easyshell.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.easyshell.postgres.serviceName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ .Values.apps.easyshell.appName }}
+        - podSelector:
+            matchLabels:
+              app: {{ .Values.apps.easyshellCoordinator.appName }}
+      ports:
+        - port: {{ .Values.apps.easyshell.postgres.port }}
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres-from-migrate-job
+  namespace: {{ .Values.apps.easyshell.namespace }}
+  labels:
+    app: {{ .Values.apps.easyshell.appName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.apps.easyshell.postgres.serviceName }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: migrate
+      ports:
+        - port: {{ .Values.apps.easyshell.postgres.port }}
+          protocol: TCP
