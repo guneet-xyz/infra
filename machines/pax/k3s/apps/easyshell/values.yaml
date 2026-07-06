@@ -1,0 +1,90 @@
+apps:
+  easyshell:
+    image: cr.guneet.xyz/easyshell/website
+    imageTag: "latest"
+    imagePullPolicy: Always
+
+    replicas: 1
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 1Gi
+
+    envFrom:
+      - secretRef:
+          name: website-secret
+
+    probes:
+      readiness:
+        path: /
+        initialDelaySeconds: 10
+        periodSeconds: 5
+      liveness:
+        path: /
+        initialDelaySeconds: 30
+        periodSeconds: 10
+
+    domain: easyshell.sh
+
+    migrator:
+      image: cr.guneet.xyz/easyshell/migrator
+      imageTag: "latest"
+      imagePullPolicy: "Always"
+      # ENTRYPOINT of the migrator image is ["pnpm", "exec", "drizzle-kit", "migrate"]
+      # Do NOT set command: or args: in the Job template
+
+    postgres:
+      serviceName: easyshell-postgres
+      port: 5432
+      dbName: easyshell
+      dbUser: easyshell
+      dbPassword: __EASYSHELL_POSTGRES_PASSWORD__
+      storage: 5Gi
+
+    images:
+      postgres:
+        image: postgres
+        imageTag: "17.9-alpine"
+
+    claims:
+      postgresData: easyshell-postgres-data
+
+    allowFromCaddy:
+      extraPorts: []
+
+  easyshellCoordinator:
+    image: cr.guneet.xyz/easyshell/coordinator
+    imageTag: "latest"
+    imagePullPolicy: Always
+
+    replicas: 1
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+    envFrom:
+      - secretRef:
+          name: coordinator-secret
+
+    probes:
+      readiness:
+        type: tcpSocket
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      liveness:
+        type: tcpSocket
+        initialDelaySeconds: 15
+        periodSeconds: 10
