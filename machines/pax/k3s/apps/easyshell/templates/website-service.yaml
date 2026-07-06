@@ -1,0 +1,1 @@
+{{ include "platform.service" (dict "app" .Values.apps.easyshell) }}
