@@ -1,0 +1,11 @@
+apiVersion: v2
+name: easyshell
+version: 0.1.0
+type: application
+dependencies:
+  - name: postgres
+    version: ">=0.1.0"
+    repository: file://../../shared/postgres
+  - name: platform
+    version: ">=0.3.0"
+    repository: file://../../shared/platform
