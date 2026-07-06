@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: easyshell-migrate
+  name: {{ .Values.apps.easyshell.appName }}-migrate
   namespace: {{ .Values.apps.easyshell.namespace }}
   labels:
     app: {{ .Values.apps.easyshell.appName }}
