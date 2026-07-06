@@ -257,3 +257,22 @@ apps:
     backup:
       - type: filesystem
         pvc: ntfy-cache
+
+  easyshell:
+    namespace: easyshell
+    appName: easyshell
+    port: 3000
+    exposure:
+      public: easyshell.sh
+      private: none
+    dependsOn: [caddy, registry]
+    backup:
+      - type: pg_dump
+        podSelector: app=easyshell-postgres
+    services:
+      easyshellCoordinator:
+        appName: easyshell-coordinator
+        port: 4100
+        exposure:
+          public: none
+          private: coordinator.easyshell.sh
