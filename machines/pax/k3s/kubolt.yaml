@@ -166,3 +166,13 @@ apps:
         - type: filesystem
           pvc: ntfy-cache
       scaleDeployments: true
+
+  - name: easyshell
+    chartPath: ./apps/easyshell
+    namespace: easyshell
+    dependsOn: [caddy, registry]
+    backup:
+      targets:
+        - type: pg_dump
+          podSelector: app=easyshell-postgres
+      scaleDeployments: true
