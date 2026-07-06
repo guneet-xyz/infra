@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apps.easyshellCoordinator.appName }}
+  namespace: {{ .Values.apps.easyshellCoordinator.namespace }}
+  labels:
+    app: {{ .Values.apps.easyshellCoordinator.appName }}
+spec:
+  replicas: {{ .Values.apps.easyshellCoordinator.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apps.easyshellCoordinator.appName }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apps.easyshellCoordinator.appName }}
+      annotations:
+        checksum/coordinator-secret: {{ include (print $.Template.BasePath "/coordinator-secret.yaml") . | sha256sum }}
+    spec:
+      nodeSelector:
+        role: primary
+      imagePullSecrets:
+        - name: registry-pull-secret
+      containers:
+        - name: coordinator
+          image: {{ .Values.apps.easyshellCoordinator.image }}:{{ .Values.apps.easyshellCoordinator.imageTag }}
+          imagePullPolicy: {{ .Values.apps.easyshellCoordinator.imagePullPolicy | default "Always" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: {{ .Values.apps.easyshellCoordinator.resources.requests.cpu }}
+              memory: {{ .Values.apps.easyshellCoordinator.resources.requests.memory }}
+            limits:
+              memory: {{ .Values.apps.easyshellCoordinator.resources.limits.memory }}
+          ports:
+            - containerPort: {{ .Values.apps.easyshellCoordinator.port }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: coordinator-secret
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.apps.easyshellCoordinator.port }}
+            initialDelaySeconds: {{ .Values.apps.easyshellCoordinator.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.apps.easyshellCoordinator.probes.readiness.periodSeconds }}
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.apps.easyshellCoordinator.port }}
+            initialDelaySeconds: {{ .Values.apps.easyshellCoordinator.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.apps.easyshellCoordinator.probes.liveness.periodSeconds }}
