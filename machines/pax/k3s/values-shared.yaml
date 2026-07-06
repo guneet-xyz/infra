@@ -6,6 +6,14 @@ apps:
     appName: walls
     namespace: walls
     port: 3000
+  easyshell:
+    appName: easyshell
+    namespace: easyshell
+    port: 3000
+  easyshellCoordinator:
+    appName: easyshell-coordinator
+    namespace: easyshell
+    port: 4100
   headlamp:
     appName: headlamp
     namespace: headlamp
